@@ -143,7 +143,7 @@ function simWindowOnKeyDown(e) {
 		} else if (e.key === "h") {
 			pickingUpHammer = true;
 		} else if (e.key === "r") {
-			// repair trap
+			repairingTrap = true;
 		}
 	}
 	if (e.key === " ") {
@@ -220,6 +220,7 @@ var hammerState; // true/false
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
 var pickingUpHammer; // true/false
+var repairingTrap; // true/false
 //}
 //{ Player - pl
 function plInit(x, y) {
@@ -228,6 +229,7 @@ function plInit(x, y) {
 	pickingUpFood = "n";
 	pickingUpLogs = false;
 	pickingUpHammer = false;
+	repairingTrap = false;
 	plPathQueuePos = 0;
 	plPathQueueX = [];
 	plPathQueueY = [];
@@ -904,8 +906,16 @@ function baDrawDetails() {
 			rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
 		}
 	}
+	if (eastTrapState < 1) {
+		rSetDrawColor(255, 0, 0, 255);
+	}
 	rrOutline(45, 26); // e trap
+	rSetDrawColor(160, 82, 45, 255);
+	if (westTrapState < 1) {
+		rSetDrawColor(255, 0, 0, 255);
+	}
 	rrOutline(15, 25); // w trap
+	rSetDrawColor(160, 82, 45, 255);
 	if (mCurrentMap === mWAVE10) {
 		rrOutlineBig(27, 20, 8, 8); // queen thing
 	}
