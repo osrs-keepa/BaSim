@@ -105,7 +105,7 @@ function simStartStopButtonOnClick() {
 		}
 		console.log("Wave " + wave + " started!");
 		simTick();
-		simTickTimerId = setInterval(simTick, 600);
+		simTickTimerId = setInterval(simTick, 1800); // tick time in milliseconds (set to 600 for real)
 	}
 }
 function simParseMovementsInput() {
@@ -121,30 +121,6 @@ function simParseMovementsInput() {
 	}
 	return movements;
 }
-/*
-function simWindowOnKeyDown(e) {
-	if (simIsRunning) {
-		if (e.key === "r") {
-			mAddItem(new fFood(plX, plY, true));
-		} else if (e.key === "w") {
-			mAddItem(new fFood(plX, plY, false));
-		} else if (e.key === "e") {
-			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
-			for (let i = 0; i < itemZone.length; ++i) {
-				let item = itemZone[i];
-				if (plX === item.x && plY === item.y) {
-					itemZone.splice(i, 1);
-					break;
-				}
-			}
-		}
-	}
-	if (e.key === " ") {
-		simStartStopButtonOnClick();
-		e.preventDefault();
-	}
-}
-*/
 function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
 		if (e.key === "t" && numTofu > 0) {
@@ -170,43 +146,10 @@ function simWindowOnKeyDown(e) {
 			}
 		} else if (e.key === "1") {
 			pickingUpFood = "t";
-			/*
-			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
-			for (let i = 0; i < itemZone.length; ++i) {
-				let item = itemZone[i];
-				if (plX === item.x && plY === item.y && item.type === "t") {
-					numTofu += 1;
-					itemZone.splice(i, 1);
-					break;
-				}
-			}
-			*/
 		} else if (e.key === "2") {
 			pickingUpFood = "c";
-			/*
-			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
-			for (let i = 0; i < itemZone.length; ++i) {
-				let item = itemZone[i];
-				if (plX === item.x && plY === item.y && item.type === "c") {
-					numCrackers += 1;
-					itemZone.splice(i, 1);
-					break;
-				}
-			}
-			*/
 		} else if (e.key === "3") {
 			pickingUpFood = "w";
-			/*
-			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
-			for (let i = 0; i < itemZone.length; ++i) {
-				let item = itemZone[i];
-				if (plX === item.x && plY === item.y && item.type === "w") {
-					numWorms += 1;
-					itemZone.splice(i, 1);
-					break;
-				}
-			}
-			*/
 		}
 	}
 	if (e.key === " ") {
