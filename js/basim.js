@@ -145,7 +145,11 @@ function simWindowOnKeyDown(e) {
 		} else if (e.key === "h") {
 			pickingUpHammer = true;
 		} else if (e.key === "r") {
-			repairingTrap = true;
+			if (repairTicksRemaining === 0 && ((isInEastRepairRange(plX, plY) && eastTrapState < 2 ) || (isInWestRepairRange(plX, plY) && westTrapState < 2))) {
+				if (hasHammer && numLogs > 0) {
+					repairTicksRemaining = 5;
+				}
+			}
 		}
 	}
 	if (e.key === " ") {
@@ -223,7 +227,7 @@ var hammerState; // true/false
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
 var pickingUpHammer; // true/false
-var repairingTrap; // true/false
+var repairTicksRemaining; // 0-5
 //}
 //{ Player - pl
 function plInit(x, y) {
@@ -232,7 +236,7 @@ function plInit(x, y) {
 	pickingUpFood = "n";
 	pickingUpLogs = false;
 	pickingUpHammer = false;
-	repairingTrap = false;
+	repairTicksRemaining = 0;
 	plPathQueuePos = 0;
 	plPathQueueX = [];
 	plPathQueueY = [];
@@ -240,7 +244,19 @@ function plInit(x, y) {
 	plWayPoints = [];
 }
 function plTick() {
-	if (pickingUpFood !== "n") {
+	if (repairTicksRemaining > 0) {
+		if (repairTicksRemaining === 1) {
+			numLogs -=1;
+			if (isInEastRepairRange(plX, plY)) {
+				eastTrapState = 2;
+			} else {
+				westTrapState = 2;
+			}
+		}
+		repairTicksRemaining -= 1;
+		plPathQueuePos = 0;
+		pickingUpFood = "n";
+	} else if (pickingUpFood !== "n") {
 		let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
 		for (let i = 0; i < itemZone.length; ++i) {
 			let item = itemZone[i];
@@ -934,13 +950,17 @@ function baDrawDetails() {
 			rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
 		}
 	}
-	if (eastTrapState < 1) {
+	if (eastTrapState === 0) {
 		rSetDrawColor(255, 0, 0, 255);
+	} else if (eastTrapState === 1) {
+		rSetDrawColor(255, 140, 0, 255);
 	}
 	rrOutline(45, 26); // e trap
 	rSetDrawColor(160, 82, 45, 255);
-	if (westTrapState < 1) {
+	if (westTrapState === 1) {
 		rSetDrawColor(255, 0, 0, 255);
+	} else if (westTrapState === 1) {
+		rSetDrawColor(255, 140, 0, 255);
 	}
 	rrOutline(15, 25); // w trap
 	rSetDrawColor(160, 82, 45, 255);
