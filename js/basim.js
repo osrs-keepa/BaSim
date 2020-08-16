@@ -5,6 +5,7 @@ const HTML_START_BUTTON = "wavestart";
 const HTML_WAVE_SELECT = "waveselect";
 const HTML_TICK_COUNT = "tickcount";
 const HTML_DEF_LEVEL_SELECT = "deflevelselect";
+const HTML_CURRENT_DEF_FOOD = "currdeffood";
 window.onload = simInit;
 //{ Simulation - sim
 function simInit() {
@@ -22,6 +23,7 @@ function simInit() {
 	simDefLevelSelect = document.getElementById(HTML_DEF_LEVEL_SELECT);
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
+	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
 	rInit(canvas, 64*12, 48*12);
 	rrInit(12);
 	mInit(mWAVE_1_TO_9, 64, 48);
@@ -204,6 +206,7 @@ var simWaveSelect;
 var simDefLevelSelect;
 var simTickCountSpan;
 var simIsRunning;
+var currDefFoodSpan;
 
 var numTofu; // 0-9
 var numCrackers; // 0-9
@@ -809,6 +812,7 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baRunnerMovementsIndex = 0;
 	baCurrentRunnerId = 1;
 	simTickCountSpan.innerHTML = baTickCounter;
+	currDefFoodSpan.innerHTML = currDefFood;
 }
 function baTick() {
 	++baTickCounter;
@@ -821,10 +825,34 @@ function baTick() {
 		let index = baRunners.indexOf(runner);
 		baRunners.splice(index, 1);
 	}
+	// hammer and logs respawn
 	if (baTickCounter > 1 && baTickCounter % 10 === 1) {
 		northwestLogsState = true;
 		southeastLogsState = true;
 		hammerState = true;
+	}
+	// currDefFood changes
+	if (baTickCounter > 1 && baTickCounter % 50 === 1) {
+		if (currDefFood === "t") {
+			if (Math.random() < 0.5) {
+				currDefFood = "c";
+			} else {
+				currDefFood = "w";
+			}
+		} else if (currDefFood === "c") {
+			if (Math.random() < 0.5) {
+				currDefFood = "w";
+			} else {
+				currDefFood = "t";
+			}
+		} else {
+			if (Math.random() < 0.5) {
+				currDefFood = "t";
+			} else {
+				currDefFood = "c";
+			}
+		}
+		currDefFoodSpan.innerHTML = currDefFood;
 	}
 	if (baTickCounter > 1 && baTickCounter % 10 === 1 && baRunnersAlive < baMaxRunnersAlive && baRunnersKilled + baRunnersAlive < baTotalRunners) {
 		let movements;
