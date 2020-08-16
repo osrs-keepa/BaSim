@@ -105,7 +105,7 @@ function simStartStopButtonOnClick() {
 		}
 		console.log("Wave " + wave + " started!");
 		simTick();
-		simTickTimerId = setInterval(simTick, 1800); // tick time in milliseconds (set to 600 for real)
+		simTickTimerId = setInterval(simTick, 600); // tick time in milliseconds (set to 600 for real)
 	}
 }
 function simParseMovementsInput() {
@@ -139,9 +139,9 @@ function simWindowOnKeyDown(e) {
 		} else if (e.key === "3") {
 			pickingUpFood = "w";
 		} else if (e.key === "l") {
-			// pick up logs
+			pickingUpLogs = true;
 		} else if (e.key === "h") {
-			// pick up hammer
+			pickingUpHammer = true;
 		} else if (e.key === "r") {
 			// repair trap
 		}
@@ -217,13 +217,17 @@ var northwestLogsState; // true/false
 var southeastLogsState; // true/false
 var hammerState; // true/false
 
-var pickingUpFood; // "t", "c", "w"
+var pickingUpFood; // "t", "c", "w", "n"
+var pickingUpLogs; // true/false
+var pickingUpHammer; // true/false
 //}
 //{ Player - pl
 function plInit(x, y) {
 	plX = x;
 	plY = y;
 	pickingUpFood = "n";
+	pickingUpLogs = false;
+	pickingUpHammer = false;
 	plPathQueuePos = 0;
 	plPathQueueX = [];
 	plPathQueueY = [];
@@ -237,20 +241,38 @@ function plTick() {
 			let item = itemZone[i];
 			if (plX === item.x && plY === item.y && item.type === pickingUpFood) {
 				itemZone.splice(i, 1);
+				if (pickingUpFood === "t") {
+					numTofu += 1;
+				} else if (pickingUpFood === "c") {
+					numCrackers += 1;
+				} else {
+					numWorms += 1;
+				}
 				break;
 			}
 		}
-
-		if (pickingUpFood === "t") {
-			numTofu += 1;
-		} else if (pickingUpFood === "c") {
-			numCrackers += 1;
-		} else {
-			numWorms += 1;
-		}
-
 		pickingUpFood = "n";
 		plPathQueuePos = 0;
+	} else if (pickingUpLogs) {
+		let waveIs10 = mCurrentMap === mWAVE10;
+		if ((waveIs10 && plX === WAVE10_NW_LOGS_X && plY === WAVE10_NW_LOGS_Y) || (!waveIs10 && plX === WAVE1_NW_LOGS_X && plY === WAVE1_NW_LOGS_Y)) {
+			if (northwestLogsState) {
+				numLogs += 1;
+				northwestLogsState = false;
+			}
+		}  else if ((waveIs10 && plX === WAVE10_SE_LOGS_X && plY === WAVE10_SE_LOGS_Y) || (!waveIs10 && plX === WAVE1_SE_LOGS_X && plY === WAVE1_SE_LOGS_Y)) {
+			if (southeastLogsState) {
+				numLogs += 1;
+				southeastLogsState = false;
+			}
+		}
+		pickingUpLogs = false;
+	} else if (pickingUpHammer) {
+		if (hammerState && plX === HAMMER_X && plY === HAMMER_Y) {
+			hasHammer = true;
+			hammerState = false;
+		}
+		pickingUpHammer = false;
 	} else if (plPathQueuePos > 0) {
 		plX = plPathQueueX[--plPathQueuePos];
 		plY = plPathQueueY[plPathQueuePos];
@@ -797,6 +819,11 @@ function baTick() {
 		let index = baRunners.indexOf(runner);
 		baRunners.splice(index, 1);
 	}
+	if (baTickCounter > 1 && baTickCounter % 10 === 1) {
+		northwestLogsState = true;
+		southeastLogsState = true;
+		hammerState = true;
+	}
 	if (baTickCounter > 1 && baTickCounter % 10 === 1 && baRunnersAlive < baMaxRunnersAlive && baRunnersKilled + baRunnersAlive < baTotalRunners) {
 		let movements;
 		if (baRunnerMovements.length > baRunnerMovementsIndex) {
@@ -863,11 +890,19 @@ function baDrawDetails() {
 	rrCone(44, 23);
 	rrCone(45, 24);
 	if (mCurrentMap === mWAVE_1_TO_9) {
-		rrFillItem(WAVE1_SE_LOGS_X, WAVE1_SE_LOGS_Y); // se logs 1-9
-		rrFillItem(WAVE1_NW_LOGS_X, WAVE1_NW_LOGS_Y); // nw logs 1-9
+		if (southeastLogsState) {
+			rrFillItem(WAVE1_SE_LOGS_X, WAVE1_SE_LOGS_Y); // se logs 1-9
+		}
+		if (northwestLogsState) {
+			rrFillItem(WAVE1_NW_LOGS_X, WAVE1_NW_LOGS_Y); // nw logs 1-9
+		}
 	} else {
-		rrFillItem(WAVE10_SE_LOGS_X, WAVE10_SE_LOGS_Y); // se logs 10
-		rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
+		if (southeastLogsState) {
+			rrFillItem(WAVE10_SE_LOGS_X, WAVE10_SE_LOGS_Y); // se logs 10
+		}
+		if (northwestLogsState) {
+			rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
+		}
 	}
 	rrOutline(45, 26); // e trap
 	rrOutline(15, 25); // w trap
@@ -875,7 +910,9 @@ function baDrawDetails() {
 		rrOutlineBig(27, 20, 8, 8); // queen thing
 	}
 	rSetDrawColor(127, 127, 127, 255); // hammer color
-	rrFillItem(HAMMER_X, HAMMER_Y); // hammer
+	if (hammerState) {
+		rrFillItem(HAMMER_X, HAMMER_Y); // hammer
+	}
 }
 function baDrawEntities() {
 	rSetDrawColor(10, 10, 240, 127);
