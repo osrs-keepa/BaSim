@@ -125,31 +125,25 @@ function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
 		if (e.key === "t" && numTofu > 0) {
 			numTofu -= 1;
-			if (currDefFood === "t") {
-				mAddItem(new fFood(plX, plY, true, "t"));
-			} else {
-				mAddItem(new fFood(plX, plY, false, "t"));
-			}
+			mAddItem(new fFood(plX, plY, currDefFood === "t", "t"));
 		} else if (e.key === "c" && numCrackers > 0) {
 			numCrackers -= 1;
-			if (currDefFood === "c") {
-				mAddItem(new fFood(plX, plY, true, "c"));
-			} else {
-				mAddItem(new fFood(plX, plY, false, "c"));
-			}
+			mAddItem(new fFood(plX, plY, currDefFood === "c", "c"));
 		} else if (e.key === "w" && numWorms > 0) {
 			numWorms -= 1;
-			if (currDefFood === "w") {
-				mAddItem(new fFood(plX, plY, true, "w"));
-			} else {
-				mAddItem(new fFood(plX, plY, false, "w"));
-			}
+			mAddItem(new fFood(plX, plY, currDefFood === "w", "w"));
 		} else if (e.key === "1") {
 			pickingUpFood = "t";
 		} else if (e.key === "2") {
 			pickingUpFood = "c";
 		} else if (e.key === "3") {
 			pickingUpFood = "w";
+		} else if (e.key === "l") {
+			// pick up logs
+		} else if (e.key === "h") {
+			// pick up hammer
+		} else if (e.key === "r") {
+			// repair trap
 		}
 	}
 	if (e.key === " ") {
