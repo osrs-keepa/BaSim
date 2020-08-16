@@ -268,16 +268,19 @@ var simDefLevelSelect;
 var simTickCountSpan;
 var simIsRunning;
 
-var numTofu;
-var numCrackers;
-var numWorms;
-var currDefFood;
-var numLogs;
-var hasHammer;
-var eastTrapState;
-var westTrapState;
+var numTofu; // 0-9
+var numCrackers; // 0-9
+var numWorms; // 0-9
+var currDefFood; // "t", "c", "w"
+var numLogs; // 0-27
+var hasHammer; // true/false
+var eastTrapState; // 0-2
+var westTrapState; // 0-2
+var northwestLogsState; // true/false
+var southeastLogsState; // true/false
+var hammerState; // true/false
 
-var pickingUpFood;
+var pickingUpFood; // "t", "c", "w"
 //}
 //{ Player - pl
 function plInit(x, y) {
@@ -810,6 +813,17 @@ const baWAVE1_DEFENDER_SPAWN_X = 33;
 const baWAVE1_DEFENDER_SPAWN_Y = 8;
 const baWAVE10_DEFENDER_SPAWN_X = 28;
 const baWAVE10_DEFENDER_SPAWN_Y = 8;
+
+const WAVE1_NW_LOGS_X = 28;
+const WAVE1_NW_LOGS_Y = 39;
+const WAVE10_NW_LOGS_X = 29;
+const WAVE10_NW_LOGS_Y = 39;
+const WAVE1_SE_LOGS_X = 29;
+const WAVE1_SE_LOGS_Y = 38;
+const WAVE10_SE_LOGS_X = 30;
+const WAVE10_SE_LOGS_Y = 38;
+const HAMMER_X = 32;
+const HAMMER_Y = 34;
 function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baRunners = [];
 	baRunnersToRemove = [];
@@ -826,6 +840,9 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	eastTrapState = 2;
 	westTrapState = 2;
 	currDefFood = "t";
+	northwestLogsState = true;
+	southeastLogsState = true;
+	hammerState = true;
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
 	baRunnerMovementsIndex = 0;
@@ -892,7 +909,7 @@ function baDrawDetails() {
 	if (mCurrentMap !== mWAVE_1_TO_9 && mCurrentMap !== mWAVE10) {
 		return;
 	}
-	rSetDrawColor(160, 82, 45, 255);
+	rSetDrawColor(160, 82, 45, 255); // logs and trap color
 	rrCone(40, 32);
 	rrCone(40, 31);
 	rrCone(41, 32);
@@ -909,19 +926,19 @@ function baDrawDetails() {
 	rrCone(44, 23);
 	rrCone(45, 24);
 	if (mCurrentMap === mWAVE_1_TO_9) {
-		rrFillItem(29, 38);
-		rrFillItem(28, 39);
+		rrFillItem(WAVE1_SE_LOGS_X, WAVE1_SE_LOGS_Y); // se logs 1-9
+		rrFillItem(WAVE1_NW_LOGS_X, WAVE1_NW_LOGS_Y); // nw logs 1-9
 	} else {
-		rrFillItem(30, 38);
-		rrFillItem(29, 39);
+		rrFillItem(WAVE10_SE_LOGS_X, WAVE10_SE_LOGS_Y); // se logs 10
+		rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
 	}
-	rrOutline(45, 26);
-	rrOutline(15, 25);
+	rrOutline(45, 26); // e trap
+	rrOutline(15, 25); // w trap
 	if (mCurrentMap === mWAVE10) {
-		rrOutlineBig(27, 20, 8, 8);
+		rrOutlineBig(27, 20, 8, 8); // queen thing
 	}
-	rSetDrawColor(127, 127, 127, 255);
-	rrFillItem(32, 34);
+	rSetDrawColor(127, 127, 127, 255); // hammer color
+	rrFillItem(HAMMER_X, HAMMER_Y); // hammer
 }
 function baDrawEntities() {
 	rSetDrawColor(10, 10, 240, 127);
