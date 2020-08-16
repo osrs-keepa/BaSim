@@ -229,7 +229,6 @@ var eStartSpan;
 var wCurrSpan;
 var eCurrSpan;
 */
-
 var numTofu; // 0-9
 var numCrackers; // 0-9
 var numWorms; // 0-9
