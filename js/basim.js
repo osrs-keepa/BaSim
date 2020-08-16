@@ -6,6 +6,12 @@ const HTML_WAVE_SELECT = "waveselect";
 const HTML_TICK_COUNT = "tickcount";
 const HTML_DEF_LEVEL_SELECT = "deflevelselect";
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
+//*/ for troublshooting traps and multikills
+const HTML_W_START = "wstart";
+const HTML_E_START = "estart";
+const HTML_W_CURR = "wcurr";
+const HTML_E_CURR = "ecurr";
+//*/
 window.onload = simInit;
 //{ Simulation - sim
 function simInit() {
@@ -24,6 +30,12 @@ function simInit() {
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
+	//*/ for troublshooting traps and multikills
+	wStartSpan = document.getElementById(HTML_W_START);
+	eStartSpan = document.getElementById(HTML_E_START);
+	wCurrSpan = document.getElementById(HTML_W_CURR);
+	eCurrSpan = document.getElementById(HTML_E_CURR);
+	//*/
 	rInit(canvas, 64*12, 48*12);
 	rrInit(12);
 	mInit(mWAVE_1_TO_9, 64, 48);
@@ -211,6 +223,10 @@ var simDefLevelSelect;
 var simTickCountSpan;
 var simIsRunning;
 var currDefFoodSpan;
+var wStartSpan;
+var eStartSpan;
+var wCurrSpan;
+var eCurrSpan;
 
 var numTofu; // 0-9
 var numCrackers; // 0-9
@@ -249,8 +265,10 @@ function plTick() {
 			numLogs -=1;
 			if (isInEastRepairRange(plX, plY)) {
 				eastTrapState = 2;
+				startingEastTrapState = 2;
 			} else {
 				westTrapState = 2;
+				startingWestTrapState = 2;
 			}
 		}
 		repairTicksRemaining -= 1;
@@ -621,6 +639,10 @@ ruRunner.prototype.tryTargetFood = function() {
 	}
 }
 ruRunner.prototype.tryEatAndCheckTarget = function() {
+	// experimental retarget mechanism on multikill tick
+	if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+		this.tryTargetFood();
+	}
 	if (this.foodTarget !== null) {
 		let itemZone = mGetItemZone(this.foodTarget.x >>> 3, this.foodTarget.y >>> 3);
 		let foodIndex = itemZone.indexOf(this.foodTarget);
@@ -859,12 +881,22 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baCurrentRunnerId = 1;
 	simTickCountSpan.innerHTML = baTickCounter;
 	currDefFoodSpan.innerHTML = currDefFood;
+	wStartSpan.innerHTML = startingWestTrapState;
+	eStartSpan.innerHTML = startingEastTrapState;
+	wCurrSpan.innerHTML = westTrapState;
+	eCurrSpan.innerHTML = eastTrapState;
 }
 var startingWestTrapState; // west trap state at start of tick
 var startingEastTrapState; // east trap state at start of tick
 function baTick() {
 	++baTickCounter;
 	baRunnersToRemove.length = 0;
+	startingEastTrapState = eastTrapState;
+	startingWestTrapState = westTrapState;
+	wStartSpan.innerHTML = startingWestTrapState;
+	eStartSpan.innerHTML = startingEastTrapState;
+	wCurrSpan.innerHTML = westTrapState;
+	eCurrSpan.innerHTML = eastTrapState;
 	for (let i = 0; i < baRunners.length; ++i) {
 		baRunners[i].tick();
 	}
