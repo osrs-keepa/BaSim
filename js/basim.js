@@ -274,7 +274,8 @@ var numWorms;
 var currDefFood;
 var numLogs;
 var hasHammer;
-var trapState;
+var eastTrapState;
+var westTrapState;
 
 var pickingUpFood;
 //}
@@ -647,8 +648,12 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 		} else if (this.x === this.foodTarget.x && this.y === this.foodTarget.y) {
 			if (this.foodTarget.isGood) {
 				this.print("Chomp, chomp.");
-				if (baIsNearTrap(this.x, this.y)) {
+				if (baIsNearEastTrap(this.x, this.y) && eastTrapState > 0) {
 					this.isDying = true;
+					eastTrapState -= 1;
+				} else if (baIsNearWestTrap(this.x, this.y) && westTrapState > 0) {
+					this.isDying = true;
+					westTrapState -= 1;
 				}
 			} else {
 				this.print("Blughhhh.");
@@ -818,7 +823,8 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	numWorms = 9;
 	numLogs = 0;
 	hasHammer = false;
-	trapState = 2;
+	eastTrapState = 2;
+	westTrapState = 2;
 	currDefFood = "t";
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
@@ -929,6 +935,18 @@ function baDrawEntities() {
 }
 function baIsNearTrap(x, y) {
 	return (Math.abs(x - baEAST_TRAP_X) < 2 && Math.abs(y - baEAST_TRAP_Y) < 2) || (Math.abs(x - baWEST_TRAP_X) < 2 && Math.abs(y - baWEST_TRAP_Y) < 2);
+}
+function baIsNearEastTrap(x, y) {
+	return (Math.abs(x - baEAST_TRAP_X) < 2 && Math.abs(y - baEAST_TRAP_Y) < 2);
+}
+function baIsNearWestTrap(x, y) {
+	return (Math.abs(x - baWEST_TRAP_X) < 2 && Math.abs(y - baWEST_TRAP_Y) < 2);
+}
+function isInEastRepairRange(x, y) {
+	return Math.abs(x - baEAST_TRAP_X) + Math.abs(y - baEAST_TRAP_Y) < 2;
+}
+function isInWestRepairRange(x, y) {
+	return Math.abs(x - baWEST_TRAP_X) + Math.abs(y - baWEST_TRAP_Y) < 2;
 }
 function baTileBlocksPenance(x, y) {
 	if (x === plX && y === plY) {
