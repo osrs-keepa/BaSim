@@ -150,23 +150,23 @@ function simWindowOnKeyDown(e) {
 		if (e.key === "t" && numTofu > 0) {
 			numTofu -= 1;
 			if (currDefFood === "t") {
-				mAddItem(new fFood(plX, plY, true));
+				mAddItem(new fFood(plX, plY, true, "t"));
 			} else {
-				mAddItem(new fFood(plX, plY, false));
+				mAddItem(new fFood(plX, plY, false, "t"));
 			}
 		} else if (e.key === "c" && numCrackers > 0) {
 			numCrackers -= 1;
 			if (currDefFood === "c") {
-				mAddItem(new fFood(plX, plY, true));
+				mAddItem(new fFood(plX, plY, true, "c"));
 			} else {
-				mAddItem(new fFood(plX, plY, false));
+				mAddItem(new fFood(plX, plY, false, "c"));
 			}
 		} else if (e.key === "w" && numWorms > 0) {
 			numWorms -= 1;
 			if (currDefFood === "w") {
-				mAddItem(new fFood(plX, plY, true));
+				mAddItem(new fFood(plX, plY, true, "w"));
 			} else {
-				mAddItem(new fFood(plX, plY, false));
+				mAddItem(new fFood(plX, plY, false, "w"));
 			}
 		} else if (e.key === "1") {
 			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
