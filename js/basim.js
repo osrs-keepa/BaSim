@@ -218,8 +218,8 @@ var numWorms; // 0-9
 var currDefFood; // "t", "c", "w"
 var numLogs; // 0-27
 var hasHammer; // true/false
-var eastTrapState; // 0-2
-var westTrapState; // 0-2
+var eastTrapState; // less than 2 (can be negative)
+var westTrapState; // less than 2 (can be negative)
 var northwestLogsState; // true/false
 var southeastLogsState; // true/false
 var hammerState; // true/false
@@ -631,6 +631,33 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 		} else if (this.x === this.foodTarget.x && this.y === this.foodTarget.y) {
 			if (this.foodTarget.isGood) {
 				this.print("Chomp, chomp.");
+
+				if (baIsNearEastTrap(this.x, this.y)) {
+					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+						if (startingEastTrapState > 0) {
+							this.isDying = true;
+							eastTrapState -= 1;
+						}
+					} else {
+						if (eastTrapState > 0) {
+							this.isDying = true;
+							eastTrapState -= 1;
+						}
+					}
+				} else if (baIsNearWestTrap(this.x, this.y)) {
+					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+						if (startingWestTrapState > 0) {
+							this.isDying = true;
+							westTrapState -= 1;
+						}
+					} else {
+						if (westTrapState > 0) {
+							this.isDying = true;
+							westTrapState -= 1;
+						}
+					}
+				}
+				/*
 				if (baIsNearEastTrap(this.x, this.y) && eastTrapState > 0) {
 					this.isDying = true;
 					eastTrapState -= 1;
@@ -638,6 +665,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 					this.isDying = true;
 					westTrapState -= 1;
 				}
+				*/
 			} else {
 				this.print("Blughhhh.");
 				this.blughhhhCountdown = 3;
@@ -819,6 +847,8 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	hasHammer = false;
 	eastTrapState = 2;
 	westTrapState = 2;
+	startingWestTrapState = 2;
+	startingEastTrapState = 2;
 	currDefFood = "t";
 	northwestLogsState = true;
 	southeastLogsState = true;
@@ -830,6 +860,8 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	simTickCountSpan.innerHTML = baTickCounter;
 	currDefFoodSpan.innerHTML = currDefFood;
 }
+var startingWestTrapState; // west trap state at start of tick
+var startingEastTrapState; // east trap state at start of tick
 function baTick() {
 	++baTickCounter;
 	baRunnersToRemove.length = 0;
@@ -950,14 +982,14 @@ function baDrawDetails() {
 			rrFillItem(WAVE10_NW_LOGS_X, WAVE10_NW_LOGS_Y); // nw logs 10
 		}
 	}
-	if (eastTrapState === 0) {
+	if (eastTrapState < 1) {
 		rSetDrawColor(255, 0, 0, 255);
 	} else if (eastTrapState === 1) {
 		rSetDrawColor(255, 140, 0, 255);
 	}
 	rrOutline(45, 26); // e trap
 	rSetDrawColor(160, 82, 45, 255);
-	if (westTrapState === 1) {
+	if (westTrapState < 1) {
 		rSetDrawColor(255, 0, 0, 255);
 	} else if (westTrapState === 1) {
 		rSetDrawColor(255, 140, 0, 255);
