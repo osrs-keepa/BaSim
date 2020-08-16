@@ -169,6 +169,8 @@ function simWindowOnKeyDown(e) {
 				mAddItem(new fFood(plX, plY, false, "w"));
 			}
 		} else if (e.key === "1") {
+			pickingUpFood = "t";
+			/*
 			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
 			for (let i = 0; i < itemZone.length; ++i) {
 				let item = itemZone[i];
@@ -178,7 +180,10 @@ function simWindowOnKeyDown(e) {
 					break;
 				}
 			}
+			*/
 		} else if (e.key === "2") {
+			pickingUpFood = "c";
+			/*
 			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
 			for (let i = 0; i < itemZone.length; ++i) {
 				let item = itemZone[i];
@@ -188,7 +193,10 @@ function simWindowOnKeyDown(e) {
 					break;
 				}
 			}
+			*/
 		} else if (e.key === "3") {
+			pickingUpFood = "w";
+			/*
 			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
 			for (let i = 0; i < itemZone.length; ++i) {
 				let item = itemZone[i];
@@ -198,6 +206,7 @@ function simWindowOnKeyDown(e) {
 					break;
 				}
 			}
+			*/
 		}
 	}
 	if (e.key === " ") {
@@ -263,11 +272,17 @@ var numTofu;
 var numCrackers;
 var numWorms;
 var currDefFood;
+var numLogs;
+var hasHammer;
+var trapState;
+
+var pickingUpFood;
 //}
 //{ Player - pl
 function plInit(x, y) {
 	plX = x;
 	plY = y;
+	pickingUpFood = "n";
 	plPathQueuePos = 0;
 	plPathQueueX = [];
 	plPathQueueY = [];
@@ -275,7 +290,27 @@ function plInit(x, y) {
 	plWayPoints = [];
 }
 function plTick() {
-	if (plPathQueuePos > 0) {
+	if (pickingUpFood !== "n") {
+		let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
+		for (let i = 0; i < itemZone.length; ++i) {
+			let item = itemZone[i];
+			if (plX === item.x && plY === item.y && item.type === pickingUpFood) {
+				itemZone.splice(i, 1);
+				break;
+			}
+		}
+
+		if (pickingUpFood === "t") {
+			numTofu += 1;
+		} else if (pickingUpFood === "c") {
+			numCrackers += 1;
+		} else {
+			numWorms += 1;
+		}
+
+		pickingUpFood = "n";
+		plPathQueuePos = 0;
+	} else if (plPathQueuePos > 0) {
 		plX = plPathQueueX[--plPathQueuePos];
 		plY = plPathQueueY[plPathQueuePos];
 		if (plPathQueuePos > 0) {
@@ -781,6 +816,9 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	numCrackers = 9;
 	numTofu = 9;
 	numWorms = 9;
+	numLogs = 0;
+	hasHammer = false;
+	trapState = 2;
 	currDefFood = "t";
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
