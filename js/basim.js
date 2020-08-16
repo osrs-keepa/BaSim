@@ -121,6 +121,7 @@ function simParseMovementsInput() {
 	}
 	return movements;
 }
+/*
 function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
 		if (e.key === "r") {
@@ -132,6 +133,67 @@ function simWindowOnKeyDown(e) {
 			for (let i = 0; i < itemZone.length; ++i) {
 				let item = itemZone[i];
 				if (plX === item.x && plY === item.y) {
+					itemZone.splice(i, 1);
+					break;
+				}
+			}
+		}
+	}
+	if (e.key === " ") {
+		simStartStopButtonOnClick();
+		e.preventDefault();
+	}
+}
+*/
+function simWindowOnKeyDown(e) {
+	if (simIsRunning) {
+		if (e.key === "t" && numTofu > 0) {
+			numTofu -= 1;
+			if (currDefFood === "t") {
+				mAddItem(new fFood(plX, plY, true));
+			} else {
+				mAddItem(new fFood(plX, plY, false));
+			}
+		} else if (e.key === "c" && numCrackers > 0) {
+			numCrackers -= 1;
+			if (currDefFood === "c") {
+				mAddItem(new fFood(plX, plY, true));
+			} else {
+				mAddItem(new fFood(plX, plY, false));
+			}
+		} else if (e.key === "w" && numWorms > 0) {
+			numWorms -= 1;
+			if (currDefFood === "w") {
+				mAddItem(new fFood(plX, plY, true));
+			} else {
+				mAddItem(new fFood(plX, plY, false));
+			}
+		} else if (e.key === "1") {
+			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
+			for (let i = 0; i < itemZone.length; ++i) {
+				let item = itemZone[i];
+				if (plX === item.x && plY === item.y && item.type === "t") {
+					numTofu += 1;
+					itemZone.splice(i, 1);
+					break;
+				}
+			}
+		} else if (e.key === "2") {
+			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
+			for (let i = 0; i < itemZone.length; ++i) {
+				let item = itemZone[i];
+				if (plX === item.x && plY === item.y && item.type === "c") {
+					numCrackers += 1;
+					itemZone.splice(i, 1);
+					break;
+				}
+			}
+		} else if (e.key === "3") {
+			let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
+			for (let i = 0; i < itemZone.length; ++i) {
+				let item = itemZone[i];
+				if (plX === item.x && plY === item.y && item.type === "w") {
+					numWorms += 1;
 					itemZone.splice(i, 1);
 					break;
 				}
@@ -158,6 +220,8 @@ function simCanvasOnMouseDown(e) {
 		}
 	}
 }
+//*/
+
 function simWaveSelectOnChange(e) {
 	if (simWaveSelect.value === "10") {
 		mInit(mWAVE10, 64, 48);
@@ -171,6 +235,7 @@ function simDefLevelSelectOnChange(e) {
 	simReset();
 	ruInit(Number(simDefLevelSelect.value));
 }
+//*/
 function simTick() {
 	baTick();
 	plTick();
@@ -193,6 +258,11 @@ var simWaveSelect;
 var simDefLevelSelect;
 var simTickCountSpan;
 var simIsRunning;
+
+var numTofu;
+var numCrackers;
+var numWorms;
+var currDefFood;
 //}
 //{ Player - pl
 function plInit(x, y) {
@@ -365,10 +435,11 @@ var plX;
 var plY;
 //}
 //{ Food - f
-function fFood(x, y, isGood) {
+function fFood(x, y, isGood, type = "t") {
 	this.x = x;
 	this.y = y;
 	this.isGood = isGood;
+	this.type = type;
 	if (this.isGood) {
 		this.colorRed = 0;
 		this.colorGreen = 255;
@@ -707,6 +778,10 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baRunnersKilled = 0;
 	baMaxRunnersAlive = maxRunnersAlive;
 	baTotalRunners = totalRunners;
+	numCrackers = 9;
+	numTofu = 9;
+	numWorms = 9;
+	currDefFood = "t";
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
 	baRunnerMovementsIndex = 0;
