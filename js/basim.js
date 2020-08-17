@@ -661,10 +661,10 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 				this.print("Chomp, chomp.");
 
 				if (baIsNearEastTrap(this.x, this.y)) {
-					if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
+					if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingEastTrapState > 0) {
 							this.isDying = true;
-							runnerIsDying = true;
+							//runnerIsDying = true;
 							eastTrapState -= 1;
 							multiActive = 3;
 						}
@@ -676,10 +676,10 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 						}
 					}
 				} else if (baIsNearWestTrap(this.x, this.y)) {
-					if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
+					if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingWestTrapState > 0) {
 							this.isDying = true;
-							runnerIsDying = true;
+							//runnerIsDying = true;
 							westTrapState -= 1;
 							multiActive = 3;
 						}
