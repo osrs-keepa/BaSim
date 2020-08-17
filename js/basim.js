@@ -8,12 +8,7 @@ const HTML_DEF_LEVEL_SELECT = "deflevelselect";
 const HTML_TOGGLE_REPAIR = 'togglerepair'
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
 const HTML_TICK_DURATION = "tickduration";
-/* for troublshooting traps and multikills
-const HTML_W_START = "wstart";
-const HTML_E_START = "estart";
-const HTML_W_CURR = "wcurr";
-const HTML_E_CURR = "ecurr";
-*/
+
 window.onload = simInit;
 //{ Simulation - sim
 function simInit() {
@@ -35,12 +30,6 @@ function simInit() {
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
-	/* for troublshooting traps and multikills
-	wStartSpan = document.getElementById(HTML_W_START);
-	eStartSpan = document.getElementById(HTML_E_START);
-	wCurrSpan = document.getElementById(HTML_W_CURR);
-	eCurrSpan = document.getElementById(HTML_E_CURR);
-	*/
 	rInit(canvas, 64*12, 48*12);
 	rrInit(12);
 	mInit(mWAVE_1_TO_9, 64, 48);
@@ -236,12 +225,7 @@ var simTickCountSpan;
 var simIsRunning;
 var currDefFoodSpan;
 var simTickDurationInput;
-/*
-var wStartSpan;
-var eStartSpan;
-var wCurrSpan;
-var eCurrSpan;
-*/
+
 var numTofu; // 0-9
 var numCrackers; // 0-9
 var numWorms; // 0-9
@@ -254,10 +238,6 @@ var northwestLogsState; // true/false
 var southeastLogsState; // true/false
 var hammerState; // true/false
 
-var runnerIsDying;
-var multiActive;
-var multiWestTrapState;
-var multiEastTrapState;
 var requireRepairs;
 
 var pickingUpFood; // "t", "c", "w", "n"
@@ -289,10 +269,8 @@ function plTick() {
 			numLogs -=1;
 			if (isInEastRepairRange(plX, plY)) {
 				eastTrapState = 2;
-				startingEastTrapState = 2;
 			} else {
 				westTrapState = 2;
-				startingWestTrapState = 2;
 			}
 		}
 		repairTicksRemaining -= 1;
@@ -675,9 +653,10 @@ ruRunner.prototype.tryTargetFood = function() {
 }
 ruRunner.prototype.tryEatAndCheckTarget = function() {
 	// experimental retarget mechanism on multikill tick
+	/*
 	if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 		this.tryTargetFood();
-	}
+	}*/
 	if (this.foodTarget !== null) {
 		let itemZone = mGetItemZone(this.foodTarget.x >>> 3, this.foodTarget.y >>> 3);
 		let foodIndex = itemZone.indexOf(this.foodTarget);
@@ -693,49 +672,11 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 					if (eastTrapState > 0 || requireRepairs === "no") {
 						this.isDying = true;
 					}
-					/*
-					if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
-						if (startingEastTrapState > 0) {
-							this.isDying = true;
-							//runnerIsDying = true;
-							eastTrapState -= 1;
-							multiActive = 3;
-						}
-					} else if ((!runnerIsDying) || multiActive > 0) {
-						if (eastTrapState > 0 || multiActive > 0) {
-							this.isDying = true;
-							runnerIsDying = true;
-							eastTrapState -= 1;
-						}
-					}*/
 				} else if (baIsNearWestTrap(this.x, this.y)) {
 					if (westTrapState > 0 || requireRepairs === "no") {
 						this.isDying = true;
 					}
-					/*if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
-						if (startingWestTrapState > 0) {
-							this.isDying = true;
-							//runnerIsDying = true;
-							westTrapState -= 1;
-							multiActive = 3;
-						}
-					} else if ((!runnerIsDying) || multiActive > 0) {
-						if (westTrapState > 0 || multiActive > 0) {
-							this.isDying = true;
-							runnerIsDying = true;
-							westTrapState -= 1;
-						}
-					}*/
 				}
-				/*
-				if (baIsNearEastTrap(this.x, this.y) && eastTrapState > 0) {
-					this.isDying = true;
-					eastTrapState -= 1;
-				} else if (baIsNearWestTrap(this.x, this.y) && westTrapState > 0) {
-					this.isDying = true;
-					westTrapState -= 1;
-				}
-				*/
 			} else {
 				this.print("Blughhhh.");
 				this.blughhhhCountdown = 3;
@@ -917,43 +858,20 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	hasHammer = false;
 	eastTrapState = 2;
 	westTrapState = 2;
-	startingWestTrapState = 2;
-	startingEastTrapState = 2;
 	currDefFood = "t";
 	northwestLogsState = true;
 	southeastLogsState = true;
 	hammerState = true;
-	runnerIsDying = false;
-	multiActive = 0;
-	multiWestTrapState = 2;
-	multiEastTrapState = 2;
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
 	baRunnerMovementsIndex = 0;
 	baCurrentRunnerId = 1;
 	simTickCountSpan.innerHTML = baTickCounter;
 	currDefFoodSpan.innerHTML = currDefFood;
-	/*
-	wStartSpan.innerHTML = startingWestTrapState;
-	eStartSpan.innerHTML = startingEastTrapState;
-	wCurrSpan.innerHTML = westTrapState;
-	eCurrSpan.innerHTML = eastTrapState;
-	*/
 }
-var startingWestTrapState; // west trap state at start of tick
-var startingEastTrapState; // east trap state at start of tick
 function baTick() {
 	++baTickCounter;
-	--multiActive;
 	baRunnersToRemove.length = 0;
-	startingEastTrapState = eastTrapState;
-	startingWestTrapState = westTrapState;
-	/*
-	wStartSpan.innerHTML = startingWestTrapState;
-	eStartSpan.innerHTML = startingEastTrapState;
-	wCurrSpan.innerHTML = westTrapState;
-	eCurrSpan.innerHTML = eastTrapState;
-	*/
 	for (let i = 0; i < baRunners.length; ++i) {
 		baRunners[i].tick();
 	}
@@ -961,12 +879,6 @@ function baTick() {
 		let runner = baRunnersToRemove[i];
 		let index = baRunners.indexOf(runner);
 		baRunners.splice(index, 1);
-	}
-	runnerIsDying = false;
-	for (let i = 0; i < baRunners.length; ++i) {
-		if (baRunners[i].isDying) {
-			runnerIsDying = true;
-		}
 	}
 	// hammer and logs respawn
 	if (baTickCounter > 1 && baTickCounter % 10 === 1) {
