@@ -926,8 +926,8 @@ function baTick() {
 		let index = baRunners.indexOf(runner);
 		baRunners.splice(index, 1);
 	}
+	runnerIsDying = false;
 	for (let i = 0; i < baRunners.length; ++i) {
-		runnerIsDying = false;
 		if (baRunners[i].isDying) {
 			runnerIsDying = true;
 		}
