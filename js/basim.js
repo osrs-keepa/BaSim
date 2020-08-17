@@ -5,6 +5,7 @@ const HTML_START_BUTTON = "wavestart";
 const HTML_WAVE_SELECT = "waveselect";
 const HTML_TICK_COUNT = "tickcount";
 const HTML_DEF_LEVEL_SELECT = "deflevelselect";
+const HTML_TOGGLE_REPAIR = 'togglerepair'
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
 /* for troublshooting traps and multikills
 const HTML_W_START = "wstart";
@@ -27,6 +28,8 @@ function simInit() {
 	simWaveSelect = document.getElementById(HTML_WAVE_SELECT);
 	simWaveSelect.onchange = simWaveSelectOnChange;
 	simDefLevelSelect = document.getElementById(HTML_DEF_LEVEL_SELECT);
+	simToggleRepair = document.getElementById(HTML_TOGGLE_REPAIR);
+	simToggleRepair.onchange = simToggleRepairOnChange;
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
@@ -202,6 +205,9 @@ function simDefLevelSelectOnChange(e) {
 	simReset();
 	ruInit(Number(simDefLevelSelect.value));
 }
+function simToggleRepairOnChange(e) {
+	requireRepairs = simToggleRepair.value;
+}
 //*/
 function simTick() {
 	baTick();
@@ -223,6 +229,7 @@ var simMovementsInput;
 var simStartStopButton;
 var simWaveSelect;
 var simDefLevelSelect;
+var simToggleRepair;
 var simTickCountSpan;
 var simIsRunning;
 var currDefFoodSpan;
@@ -248,6 +255,7 @@ var runnerIsDying;
 var multiActive;
 var multiWestTrapState;
 var multiEastTrapState;
+var requireRepairs;
 
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
@@ -679,7 +687,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 				this.print("Chomp, chomp.");
 
 				if (baIsNearEastTrap(this.x, this.y)) {
-					if (eastTrapState > 0) {
+					if (eastTrapState > 0 || requireRepairs === "no") {
 						this.isDying = true;
 					}
 					/*
@@ -698,7 +706,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 						}
 					}*/
 				} else if (baIsNearWestTrap(this.x, this.y)) {
-					if (westTrapState > 0) {
+					if (westTrapState > 0 || requireRepairs === "no") {
 						this.isDying = true;
 					}
 					/*if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
