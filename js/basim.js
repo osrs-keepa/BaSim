@@ -160,6 +160,9 @@ function simWindowOnKeyDown(e) {
 			if (repairTicksRemaining === 0 && ((isInEastRepairRange(plX, plY) && eastTrapState < 2 ) || (isInWestRepairRange(plX, plY) && westTrapState < 2))) {
 				if (hasHammer && numLogs > 0) {
 					repairTicksRemaining = 5;
+					if (plStandStillCounter === 0) {
+						++repairTicksRemaining;
+					}
 				}
 			}
 		}
@@ -264,8 +267,12 @@ function plInit(x, y) {
 	plPathQueueY = [];
 	plShortestDistances = [];
 	plWayPoints = [];
+	plStandStillCounter = 0;
 }
 function plTick() {
+	++plStandStillCounter;
+	let prevX = plX;
+	let prevY = plY;
 	if (repairTicksRemaining > 0) {
 		if (repairTicksRemaining === 1) {
 			numLogs -=1;
@@ -325,6 +332,9 @@ function plTick() {
 			plX = plPathQueueX[--plPathQueuePos];
 			plY = plPathQueueY[plPathQueuePos];
 		}
+	}
+	if (prevX !== plX || prevY !== plY) {
+		plStandStillCounter = 0;
 	}
 }
 function plDrawPlayer() {
@@ -476,6 +486,7 @@ var plPathQueueX;
 var plPathQueueY;
 var plX;
 var plY;
+var plStandStillCounter;
 //}
 //{ Food - f
 function fFood(x, y, isGood, type = "t") {
@@ -554,6 +565,13 @@ ruRunner.prototype.tick = function() {
 			baRunnersToRemove.push(this);
 			if (!this.isDying) {
 				--baRunnersAlive;
+			} else {
+				if (baIsNearEastTrap(this.x, this.y)) {
+					if (eastTrapState > 0) --eastTrapState;
+				}
+				if (baIsNearWestTrap(this.x, this.y)) {
+					if (westTrapState > 0) --westTrapState;
+				}
 			}
 		}
 	} else {
@@ -661,6 +679,10 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 				this.print("Chomp, chomp.");
 
 				if (baIsNearEastTrap(this.x, this.y)) {
+					if (eastTrapState > 0) {
+						this.isDying = true;
+					}
+					/*
 					if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingEastTrapState > 0) {
 							this.isDying = true;
@@ -674,9 +696,12 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 							runnerIsDying = true;
 							eastTrapState -= 1;
 						}
-					}
+					}*/
 				} else if (baIsNearWestTrap(this.x, this.y)) {
-					if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
+					if (westTrapState > 0) {
+						this.isDying = true;
+					}
+					/*if ((!runnerIsDying) && baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingWestTrapState > 0) {
 							this.isDying = true;
 							//runnerIsDying = true;
@@ -689,7 +714,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 							runnerIsDying = true;
 							westTrapState -= 1;
 						}
-					}
+					}*/
 				}
 				/*
 				if (baIsNearEastTrap(this.x, this.y) && eastTrapState > 0) {
