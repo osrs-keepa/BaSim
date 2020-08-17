@@ -7,6 +7,7 @@ const HTML_TICK_COUNT = "tickcount";
 const HTML_DEF_LEVEL_SELECT = "deflevelselect";
 const HTML_TOGGLE_REPAIR = 'togglerepair'
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
+const HTML_TICK_DURATION = "tickduration";
 /* for troublshooting traps and multikills
 const HTML_W_START = "wstart";
 const HTML_E_START = "estart";
@@ -23,6 +24,7 @@ function simInit() {
 			e.preventDefault();
 		}
 	};
+	simTickDurationInput = document.getElementById(HTML_TICK_DURATION);
 	simStartStopButton = document.getElementById(HTML_START_BUTTON);
 	simStartStopButton.onclick = simStartStopButtonOnClick;
 	simWaveSelect = document.getElementById(HTML_WAVE_SELECT);
@@ -122,7 +124,7 @@ function simStartStopButtonOnClick() {
 		}
 		console.log("Wave " + wave + " started!");
 		simTick();
-		simTickTimerId = setInterval(simTick, 600); // tick time in milliseconds (set to 600 for real)
+		simTickTimerId = setInterval(simTick, Number(simTickDurationInput.value)); // tick time in milliseconds (set to 600 for real)
 	}
 }
 function simParseMovementsInput() {
@@ -233,6 +235,7 @@ var simToggleRepair;
 var simTickCountSpan;
 var simIsRunning;
 var currDefFoodSpan;
+var simTickDurationInput;
 /*
 var wStartSpan;
 var eStartSpan;
