@@ -927,11 +927,10 @@ function baTick() {
 		baRunners.splice(index, 1);
 	}
 	for (let i = 0; i < baRunners.length; ++i) {
+		runnerIsDying = false;
 		if (baRunners[i].isDying) {
 			runnerIsDying = true;
-			break;
 		}
-		runnerIsDying = false;
 	}
 	// hammer and logs respawn
 	if (baTickCounter > 1 && baTickCounter % 10 === 1) {
