@@ -241,6 +241,11 @@ var northwestLogsState; // true/false
 var southeastLogsState; // true/false
 var hammerState; // true/false
 
+var runnerIsDying;
+var multiActive;
+var multiWestTrapState;
+var multiEastTrapState;
+
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
 var pickingUpHammer; // true/false
@@ -659,11 +664,14 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
 						if (startingEastTrapState > 0) {
 							this.isDying = true;
+							runnerIsDying = true;
 							eastTrapState -= 1;
+							multiActive = 3;
 						}
-					} else {
-						if (eastTrapState > 0) {
+					} else if ((!runnerIsDying) || multiActive > 0) {
+						if (eastTrapState > 0 || multiActive > 0) {
 							this.isDying = true;
+							runnerIsDying = true;
 							eastTrapState -= 1;
 						}
 					}
@@ -671,11 +679,14 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
 						if (startingWestTrapState > 0) {
 							this.isDying = true;
+							runnerIsDying = true;
 							westTrapState -= 1;
+							multiActive = 3;
 						}
-					} else {
-						if (westTrapState > 0) {
+					} else if ((!runnerIsDying) || multiActive > 0) {
+						if (westTrapState > 0 || multiActive > 0) {
 							this.isDying = true;
+							runnerIsDying = true;
 							westTrapState -= 1;
 						}
 					}
@@ -876,6 +887,10 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	northwestLogsState = true;
 	southeastLogsState = true;
 	hammerState = true;
+	runnerIsDying = false;
+	multiActive = 0;
+	multiWestTrapState = 2;
+	multiEastTrapState = 2;
 	baCollectorX = -1;
 	baRunnerMovements = runnerMovements;
 	baRunnerMovementsIndex = 0;
@@ -893,6 +908,7 @@ var startingWestTrapState; // west trap state at start of tick
 var startingEastTrapState; // east trap state at start of tick
 function baTick() {
 	++baTickCounter;
+	--multiActive;
 	baRunnersToRemove.length = 0;
 	startingEastTrapState = eastTrapState;
 	startingWestTrapState = westTrapState;
@@ -909,6 +925,13 @@ function baTick() {
 		let runner = baRunnersToRemove[i];
 		let index = baRunners.indexOf(runner);
 		baRunners.splice(index, 1);
+	}
+	for (let i = 0; i < baRunners.length; ++i) {
+		if (baRunners[i].isDying) {
+			runnerIsDying = true;
+			break;
+		}
+		runnerIsDying = false;
 	}
 	// hammer and logs respawn
 	if (baTickCounter > 1 && baTickCounter % 10 === 1) {
