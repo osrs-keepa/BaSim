@@ -646,7 +646,7 @@ ruRunner.prototype.tryTargetFood = function() {
 }
 ruRunner.prototype.tryEatAndCheckTarget = function() {
 	// experimental retarget mechanism on multikill tick
-	if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+	if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 		this.tryTargetFood();
 	}
 	if (this.foodTarget !== null) {
@@ -661,7 +661,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 				this.print("Chomp, chomp.");
 
 				if (baIsNearEastTrap(this.x, this.y)) {
-					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+					if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingEastTrapState > 0) {
 							this.isDying = true;
 							runnerIsDying = true;
@@ -676,7 +676,7 @@ ruRunner.prototype.tryEatAndCheckTarget = function() {
 						}
 					}
 				} else if (baIsNearWestTrap(this.x, this.y)) {
-					if (baTickCounter > 1 && baTickCounter % 10 === 1) { // multikill tick
+					if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
 						if (startingWestTrapState > 0) {
 							this.isDying = true;
 							runnerIsDying = true;
