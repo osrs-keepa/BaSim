@@ -131,13 +131,13 @@ function simParseMovementsInput() {
 }
 function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
-		if (e.key === "t" && numTofu > 0) {
+		if (e.key === "t" && numTofu > 0 && repairTicksRemaining === 0) {
 			numTofu -= 1;
 			mAddItem(new fFood(plX, plY, currDefFood === "t", "t"));
-		} else if (e.key === "c" && numCrackers > 0) {
+		} else if (e.key === "c" && numCrackers > 0 && repairTicksRemaining === 0) {
 			numCrackers -= 1;
 			mAddItem(new fFood(plX, plY, currDefFood === "c", "c"));
-		} else if (e.key === "w" && numWorms > 0) {
+		} else if (e.key === "w" && numWorms > 0 && repairTicksRemaining === 0) {
 			numWorms -= 1;
 			mAddItem(new fFood(plX, plY, currDefFood === "w", "w"));
 		} else if (e.key === "1") {
