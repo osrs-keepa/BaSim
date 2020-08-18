@@ -169,7 +169,7 @@ function simWindowOnKeyDown(e) {
 	}
 }
 
-var isPaused;
+var isPaused; // true/false
 
 function simCanvasOnMouseDown(e) {
 	var canvasRect = rCanvas.getBoundingClientRect();
