@@ -8,11 +8,11 @@ I am using this as an excuse to learn JavaScript + Node.js and test out reinforc
 
 # Features Added
 
--Different foods
--Call changes
--Trap decay (toggleable)
--Trap repair
--Log pickup
--Hammer pickup
--Customizable tick duration
--Pause/unpause
+- Different foods
+- Call changes
+- Trap decay (toggleable)
+- Trap repair
+- Log pickup
+- Hammer pickup
+- Customizable tick duration
+- Pause/unpause
