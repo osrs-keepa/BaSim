@@ -38,6 +38,17 @@ Tick duration (milliseconds): <input id="tickduration" type="number" min="100" m
 <b>h</b> picks up hammer.<br>
 <b>r</b> repairs a trap.<br>
 <b>p</b> pauses/unpauses.<br>
+<b>s</b> saves state (must be paused).<br>
+<b>y</b> loads state (must be running, and must be paused).<br>
+<br>
+<b>Save/Load (Experimental):</b><br>
+If you save with <b>s</b>, then loading with <b>y</b> will bring to to the same state on the same wave you saved.<br>
+Defender level will behave as it was when you saved. Runner movements are calculated dynamically, so they will vary each time you load.<br>
+Tick duration can be changed by stopping the wave, changing tick duration, then starting the wave, then loading.<br>
+Repair requirement is dynamic and will be whatever the value currently is set to via the selection menu.<br>
+Although the wave and defender level will behave the same as when you saved, the selection in the menu will not change when you load.<br>
+So, if you change the selection, start, then load: you will load from the saved wave and level, but they will not change in selectors.<br>
+If you then stop and start the wave, it will play with the wave and level displayed in the selectors normally (not from loaded wave/level).<br>
 <br>
 First food is always tofu (for convenience), changes to random new food every 50 ticks (52, 102, 152, etc.).<br>
 <br>

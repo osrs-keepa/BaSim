@@ -161,6 +161,14 @@ function simWindowOnKeyDown(e) {
 			}
 		} else if (e.key === "p") {
 			isPaused = !isPaused;
+		} else if (e.key === "s") {
+			if (isPaused) {
+				saveGameState();
+			}
+		} else if (e.key === "y") {
+			if (isPaused) {
+				loadGameState();
+			}
 		}
 	}
 	if (e.key === " ") {
@@ -1459,3 +1467,237 @@ var rDrawColorRB;
 var rDrawColorG;
 var rDrawColorA;
 //}
+
+// HERE BEGINS THE SAVE/LOAD CODE
+
+var savebaRunners;
+var savebaRunnersToRemove;
+var savebaTickCounter;
+var savebaRunnersAlive;
+var savebaRunnersKilled;
+var savebaMaxRunnersAlive;
+var savebaTotalRunners;
+var savenumCrackers;
+var savenumTofu;
+var savenumWorms;
+var savenumLogs;
+var savehasHammer;
+var saveeastTrapState;
+var savewestTrapState;
+var savecurrDefFood;
+var savenorthwestLogsState;
+var savesoutheastLogsState;
+var savehammerState;
+var savebaCollectorX;
+var savebaRunnerMovements;
+var savebaRunnerMovementsIndex;
+var savebaCurrentRunnerId;
+
+var saveisPaused;
+var savebaCollectorY;
+
+// WEIRD STUFF
+var savesimTickCountSpaninnerHTML; // ???
+var savecurrDefFoodSpaninnerHTML; // ???
+//var savesimTickTimerId; //  000000000000  use currently running sim tick timer
+//var savesimMovementsInput; // 000000000000  movements are saved/loaded via baRunnerMovements
+//var savesimStartStopButton; // 000000000000  use existing startstop button
+//var savesimWaveSelect; // 000000000000  wave info is saved/loaded via other variables
+//var savesimDefLevelSelect; // 0000000000000 passed via rusniffdistance
+//var savesimToggleRepair; // 000000000000 use currently running togglerepair
+//var savesimIsRunning; // 0000000000000 use currently running simisrunning
+//var savesimTickDurationInput; // 0000000000000  use currently running sim tick duration
+// NO MORE WEIRD STUFF
+
+var saverequireRepairs;
+
+var savepickingUpFood; // "t", "c", "w", "n"
+var savepickingUpLogs; // true/false
+var savepickingUpHammer; // true/false
+var saverepairTicksRemaining; // 0-5
+
+var saveplPathQueuePos;
+var saveplShortestDistances;
+var saveplWayPoints;
+var saveplPathQueueX;
+var saveplPathQueueY;
+var saveplX;
+var saveplY;
+var saveplStandStillCounter;
+
+var savemCurrentMap;
+var savemWidthTiles;
+var savemHeightTiles;
+var savemItemZones;
+var savemItemZonesWidth;
+var savemItemZonesHeight;
+
+var saverrTileSize;
+
+var saverCanvas;
+var saverCanvasWidth;
+var saverCanvasHeight;
+var saverCanvasYFixOffset;
+var saverContext;
+var saverImageData;
+var saverPixels;
+var saverPixels8;
+var saverPixels32;
+var saverDrawColor;
+var saverDrawColorRB;
+var saverDrawColorG;
+var saverDrawColorA;
+
+var saveruSniffDistance;
+
+function deepCopy(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}
+
+function saveGameState() {
+	isPaused = true; // pause before saving
+
+	// WEIRD STUFF
+	savesimTickCountSpaninnerHTML = simTickCountSpan.innerHTML;
+	savecurrDefFoodSpaninnerHTML = currDefFoodSpan.innerHTML;
+	// NO MORE WEIRD STUFF
+
+	savebaRunners = deepCopy(baRunners);
+	savebaRunnersToRemove = deepCopy(baRunnersToRemove);
+	savebaTickCounter = baTickCounter;
+	savebaRunnersAlive = baRunnersAlive;
+	savebaRunnersKilled = baRunnersKilled;
+	savebaMaxRunnersAlive = baMaxRunnersAlive;
+	savebaTotalRunners = baTotalRunners;
+	savenumCrackers = numCrackers;
+	savenumTofu = numTofu;
+	savenumWorms = numWorms;
+	savenumLogs = numLogs;
+	savehasHammer = hasHammer;
+	saveeastTrapState = eastTrapState;
+	savewestTrapState = westTrapState;
+	savecurrDefFood = currDefFood;
+	savenorthwestLogsState = northwestLogsState;
+	savesoutheastLogsState = southeastLogsState;
+	savehammerState = hammerState;
+	savebaCollectorX = baCollectorX;
+	savebaRunnerMovements = deepCopy(baRunnerMovements);
+	savebaRunnerMovementsIndex = baRunnerMovementsIndex;
+	savebaCurrentRunnerId = baCurrentRunnerId;
+	saveisPaused = isPaused;
+	savebaCollectorY = baCollectorY;
+
+	saverequireRepairs = requireRepairs;
+	savepickingUpFood = pickingUpFood;
+	savepickingUpHammer = pickingUpHammer;
+	saverepairTicksRemaining = repairTicksRemaining;
+
+	saveplPathQueuePos = plPathQueuePos;
+	saveplShortestDistances = deepCopy(plShortestDistances);
+	saveplWayPoints = deepCopy(plWayPoints);
+	saveplPathQueueX = deepCopy(plPathQueueX);
+	saveplPathQueueY = deepCopy(plPathQueueY);
+	saveplX = plX;
+	saveplY = plY;
+	saveplStandStillCounter = plStandStillCounter;
+
+	savemCurrentMap = mCurrentMap;
+	savemWidthTiles = mWidthTiles;
+	savemHeightTiles = mHeightTiles;
+	savemItemZones = deepCopy(mItemZones);
+	savemItemZonesWidth = mItemZonesWidth;
+	savemItemZonesHeight = mItemZonesHeight;
+
+	saverrTileSize = rrTileSize;
+
+	saverCanvas = rCanvas;
+	saverCanvasWidth = rCanvasWidth;
+	saverCanvasHeight = rCanvasHeight;
+	saverCanvasYFixOffset = rCanvasYFixOffset;
+	saverContext = rContext;
+	saverImageData = rImageData;
+	saverPixels = rPixels;
+	saverPixels8 = rPixels8;
+	saverPixels32 = rPixels32;
+	saverDrawColor = rDrawColor;
+	saverDrawColorRB = rDrawColorRB;
+	saverDrawColorG = rDrawColorG;
+	saverDrawColorA = rDrawColorA;
+
+	saveruSniffDistance = ruSniffDistance;
+}
+
+function loadGameState() {
+	isPaused = true;
+
+	// WEIRD STUFF
+	simTickCountSpan.innerHTML = savesimTickCountSpaninnerHTML;
+	currDefFoodSpan.innerHTML = savecurrDefFoodSpaninnerHTML;
+	// NO MORE WEIRD STUFF
+
+	baRunners = deepCopy(savebaRunners);
+	baRunnersToRemove = deepCopy(savebaRunnersToRemove);
+	baTickCounter = savebaTickCounter;
+	baRunnersAlive = savebaRunnersAlive;
+	baRunnersKilled = savebaRunnersKilled;
+	baMaxRunnersAlive = savebaMaxRunnersAlive;
+	baTotalRunners = savebaTotalRunners;
+	numCrackers = savenumCrackers;
+	numTofu = savenumTofu;
+	numWorms = savenumWorms;
+	numLogs = savenumLogs;
+	hasHammer = savehasHammer;
+	eastTrapState = saveeastTrapState;
+	westTrapState = savewestTrapState;
+	currDefFood = savecurrDefFood;
+	northwestLogsState = savenorthwestLogsState;
+	southeastLogsState = savesoutheastLogsState;
+	hammerState = savehammerState;
+	baCollectorX = savebaCollectorX;
+	baRunnerMovements = deepCopy(savebaRunnerMovements);
+	baRunnerMovementsIndex = savebaRunnerMovementsIndex;
+	baCurrentRunnerId = savebaCurrentRunnerId;
+	isPaused = saveisPaused;
+	baCollectorY = savebaCollectorY;
+
+	requireRepairs = saverequireRepairs;
+	pickingUpFood = savepickingUpFood;
+	pickingUpHammer = savepickingUpHammer;
+	repairTicksRemaining = saverepairTicksRemaining;
+
+	plPathQueuePos = saveplPathQueuePos;
+	plShortestDistances = deepCopy(saveplShortestDistances);
+	plWayPoints = deepCopy(saveplWayPoints);
+	plPathQueueX = deepCopy(saveplPathQueueX);
+	plPathQueueY = deepCopy(saveplPathQueueY);
+	plX = saveplX;
+	plY = saveplY;
+	plStandStillCounter = saveplStandStillCounter;
+
+	mCurrentMap = savemCurrentMap;
+	mWidthTiles = savemWidthTiles;
+	mHeightTiles = savemHeightTiles;
+	mItemZones = deepCopy(savemItemZones);
+	mItemZonesWidth = savemItemZonesWidth;
+	mItemZonesHeight = savemItemZonesHeight;
+
+	rrTileSize = saverrTileSize;
+
+	rCanvas = saverCanvas;
+	rCanvasWidth = saverCanvasWidth;
+	rCanvasHeight = saverCanvasHeight;
+	rCanvasYFixOffset = saverCanvasYFixOffset;
+	rContext = saverContext;
+	rImageData = saverImageData;
+	rPixels = saverPixels;
+	rPixels8 = saverPixels8;
+	rPixels32 = saverPixels32;
+	rDrawColor = saverDrawColor;
+	rDrawColorRB = saverDrawColorRB;
+	rDrawColorG = saverDrawColorG;
+	rDrawColorA = saverDrawColorA;
+
+	ruSniffDistance = saveruSniffDistance;
+
+	simDraw();
+}
