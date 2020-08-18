@@ -159,6 +159,8 @@ function simWindowOnKeyDown(e) {
 					}
 				}
 			}
+		} else if (e.key === "p") {
+			isPaused = !isPaused;
 		}
 	}
 	if (e.key === " ") {
@@ -166,6 +168,9 @@ function simWindowOnKeyDown(e) {
 		e.preventDefault();
 	}
 }
+
+var isPaused;
+
 function simCanvasOnMouseDown(e) {
 	var canvasRect = rCanvas.getBoundingClientRect();
 	let xTile = Math.trunc((e.clientX - canvasRect.left) / rrTileSize);
@@ -201,9 +206,11 @@ function simToggleRepairOnChange(e) {
 }
 //*/
 function simTick() {
-	baTick();
-	plTick();
-	simDraw();
+	if (!isPaused) {
+		baTick();
+		plTick();
+		simDraw();
+	}
 }
 function simDraw() {
 	mDrawMap();
@@ -868,6 +875,7 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baCurrentRunnerId = 1;
 	simTickCountSpan.innerHTML = baTickCounter;
 	currDefFoodSpan.innerHTML = currDefFood;
+	isPaused = false;
 }
 function baTick() {
 	++baTickCounter;
