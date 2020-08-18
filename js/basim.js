@@ -887,7 +887,7 @@ function baTick() {
 		hammerState = true;
 	}
 	// currDefFood changes
-	if (baTickCounter > 1 && baTickCounter % 50 === 2) {
+	if (baTickCounter > 2 && baTickCounter % 50 === 2) {
 		if (currDefFood === "t") {
 			if (Math.random() < 0.5) {
 				currDefFood = "c";
