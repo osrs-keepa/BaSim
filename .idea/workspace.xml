@@ -43,6 +43,8 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="javascript.nodejs.core.library.configured.version" value="12.18.3" />
+    <property name="javascript.nodejs.core.library.typings.version" value="12.12.54" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
@@ -95,7 +97,8 @@
       <workItem from="1597737440841" duration="103000" />
       <workItem from="1597783575029" duration="5000" />
       <workItem from="1597783672463" duration="73000" />
-      <workItem from="1597807443427" duration="436000" />
+      <workItem from="1597807443427" duration="7132000" />
+      <workItem from="1597819033036" duration="2852000" />
     </task>
     <servers />
   </component>

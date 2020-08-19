@@ -1554,6 +1554,16 @@ function deepCopy(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }
 
+function otherDeepCopy(obj) {
+	return obj.map(a => Object.assign({}, a))
+}
+
+const v8 = require('v8');
+
+function v8deepCopy(obj) {
+	return v8.deserialize(v8.serialize(obj));
+}
+
 function saveGameState() {
 	isPaused = true; // pause before saving
 
@@ -1562,8 +1572,8 @@ function saveGameState() {
 	savecurrDefFoodSpaninnerHTML = currDefFoodSpan.innerHTML;
 	// NO MORE WEIRD STUFF
 
-	savebaRunners = deepCopy(baRunners);
-	savebaRunnersToRemove = deepCopy(baRunnersToRemove);
+	savebaRunners = otherDeepCopy(baRunners);
+	savebaRunnersToRemove = otherDeepCopy(baRunnersToRemove);
 	savebaTickCounter = baTickCounter;
 	savebaRunnersAlive = baRunnersAlive;
 	savebaRunnersKilled = baRunnersKilled;
@@ -1581,7 +1591,7 @@ function saveGameState() {
 	savesoutheastLogsState = southeastLogsState;
 	savehammerState = hammerState;
 	savebaCollectorX = baCollectorX;
-	savebaRunnerMovements = deepCopy(baRunnerMovements);
+	savebaRunnerMovements = otherDeepCopy(baRunnerMovements);
 	savebaRunnerMovementsIndex = baRunnerMovementsIndex;
 	savebaCurrentRunnerId = baCurrentRunnerId;
 	saveisPaused = isPaused;
@@ -1593,10 +1603,10 @@ function saveGameState() {
 	saverepairTicksRemaining = repairTicksRemaining;
 
 	saveplDefPathQueuePos = plDefPathQueuePos;
-	saveplDefShortestDistances = deepCopy(plDefShortestDistances);
-	saveplDefWayPoints = deepCopy(plDefWayPoints);
-	saveplDefPathQueueX = deepCopy(plDefPathQueueX);
-	saveplDefPathQueueY = deepCopy(plDefPathQueueY);
+	saveplDefShortestDistances = otherDeepCopy(plDefShortestDistances);
+	saveplDefWayPoints = otherDeepCopy(plDefWayPoints);
+	saveplDefPathQueueX = otherDeepCopy(plDefPathQueueX);
+	saveplDefPathQueueY = otherDeepCopy(plDefPathQueueY);
 	saveplDefX = plDefX;
 	saveplDefY = plDefY;
 	saveplDefStandStillCounter = plDefStandStillCounter;
@@ -1604,7 +1614,7 @@ function saveGameState() {
 	savemCurrentMap = mCurrentMap;
 	savemWidthTiles = mWidthTiles;
 	savemHeightTiles = mHeightTiles;
-	savemItemZones = deepCopy(mItemZones);
+	savemItemZones = otherDeepCopy(mItemZones);
 	savemItemZonesWidth = mItemZonesWidth;
 	savemItemZonesHeight = mItemZonesHeight;
 
@@ -1635,8 +1645,8 @@ function loadGameState() {
 	currDefFoodSpan.innerHTML = savecurrDefFoodSpaninnerHTML;
 	// NO MORE WEIRD STUFF
 
-	baRunners = deepCopy(savebaRunners);
-	baRunnersToRemove = deepCopy(savebaRunnersToRemove);
+	baRunners = otherDeepCopy(savebaRunners);
+	baRunnersToRemove = otherDeepCopy(savebaRunnersToRemove);
 	baTickCounter = savebaTickCounter;
 	baRunnersAlive = savebaRunnersAlive;
 	baRunnersKilled = savebaRunnersKilled;
@@ -1654,7 +1664,7 @@ function loadGameState() {
 	southeastLogsState = savesoutheastLogsState;
 	hammerState = savehammerState;
 	baCollectorX = savebaCollectorX;
-	baRunnerMovements = deepCopy(savebaRunnerMovements);
+	baRunnerMovements = otherDeepCopy(savebaRunnerMovements);
 	baRunnerMovementsIndex = savebaRunnerMovementsIndex;
 	baCurrentRunnerId = savebaCurrentRunnerId;
 	isPaused = saveisPaused;
@@ -1666,10 +1676,10 @@ function loadGameState() {
 	repairTicksRemaining = saverepairTicksRemaining;
 
 	plDefPathQueuePos = saveplDefPathQueuePos;
-	plDefShortestDistances = deepCopy(saveplDefShortestDistances);
-	plDefWayPoints = deepCopy(saveplDefWayPoints);
-	plDefPathQueueX = deepCopy(saveplDefPathQueueX);
-	plDefPathQueueY = deepCopy(saveplDefPathQueueY);
+	plDefShortestDistances = otherDeepCopy(saveplDefShortestDistances);
+	plDefWayPoints = otherDeepCopy(saveplDefWayPoints);
+	plDefPathQueueX = otherDeepCopy(saveplDefPathQueueX);
+	plDefPathQueueY = otherDeepCopy(saveplDefPathQueueY);
 	plDefX = saveplDefX;
 	plDefY = saveplDefY;
 	plDefStandStillCounter = saveplDefStandStillCounter;
@@ -1677,7 +1687,7 @@ function loadGameState() {
 	mCurrentMap = savemCurrentMap;
 	mWidthTiles = savemWidthTiles;
 	mHeightTiles = savemHeightTiles;
-	mItemZones = deepCopy(savemItemZones);
+	mItemZones = otherDeepCopy(savemItemZones);
 	mItemZonesWidth = savemItemZonesWidth;
 	mItemZonesHeight = savemItemZonesHeight;
 
