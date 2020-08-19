@@ -16,3 +16,4 @@ I am using this as an excuse to learn JavaScript + Node.js and test out reinforc
 - Hammer pickup
 - Customizable tick duration
 - Pause/unpause
+- Save/load game state
