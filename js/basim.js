@@ -506,7 +506,10 @@ function fFood(x, y, isGood, type = "t") {
 		this.colorGreen = 0;
 	}
 	this.colorBlue = 0;
+	this.id = foodIDCounter;
+	foodIDCounter++;
 }
+var foodIDCounter;
 //}
 //{ RunnerRNG - rng
 const rngSOUTH = 0;
@@ -900,6 +903,7 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	simTickCountSpan.innerHTML = baTickCounter;
 	currDefFoodSpan.innerHTML = currDefFood;
 	isPaused = false;
+	foodIDCounter = 0;
 }
 function baTick() {
 	++baTickCounter;
@@ -1730,6 +1734,22 @@ function loadGameState() {
 	rDrawColorA = saverDrawColorA;
 
 	ruSniffDistance = saveruSniffDistance;
+
+	for (let i = 0; i < baRunners.length; i++) {
+		let thisRunner = baRunners[i];
+		if (thisRunner.foodTarget !== null) {
+			let thisRunnerFoodID = thisRunner.foodTarget.id;
+			for (let j = 0; j < mItemZones.length; j++) {
+				let itemZone = mItemZones[j];
+				for (let k = 0; k < itemZone.length; k++) {
+					let thisFood = itemZone[k];
+					if (thisFood.id === thisRunnerFoodID) {
+						thisRunner.foodTarget = thisFood;
+					}
+				}
+			}
+		}
+	}
 
 	simDraw();
 }
