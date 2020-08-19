@@ -21,7 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="851ef115-64fd-425e-b244-64db466d7d2b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/basim.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/basim.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +91,11 @@
       <workItem from="1597720493354" duration="72000" />
       <workItem from="1597721600918" duration="3000" />
       <workItem from="1597723960735" duration="316000" />
-      <workItem from="1597729967151" duration="5941000" />
+      <workItem from="1597729967151" duration="6641000" />
+      <workItem from="1597737440841" duration="103000" />
+      <workItem from="1597783575029" duration="5000" />
+      <workItem from="1597783672463" duration="73000" />
+      <workItem from="1597807443427" duration="436000" />
     </task>
     <servers />
   </component>

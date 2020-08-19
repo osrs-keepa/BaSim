@@ -48,7 +48,7 @@ function simReset() {
 	simIsRunning = false;
 	simStartStopButton.innerHTML = "Start Wave";
 	baInit(0, 0, "");
-	plInit(-1, 0);
+	plDefInit(-1, 0);
 	simDraw();
 }
 function simStartStopButtonOnClick() {
@@ -107,9 +107,9 @@ function simStartStopButtonOnClick() {
 		}
 		baInit(maxRunnersAlive, totalRunners, movements);
 		if (mCurrentMap === mWAVE10) {
-			plInit(baWAVE10_DEFENDER_SPAWN_X, baWAVE10_DEFENDER_SPAWN_Y);
+			plDefInit(baWAVE10_DEFENDER_SPAWN_X, baWAVE10_DEFENDER_SPAWN_Y);
 		} else {
-			plInit(baWAVE1_DEFENDER_SPAWN_X, baWAVE1_DEFENDER_SPAWN_Y);
+			plDefInit(baWAVE1_DEFENDER_SPAWN_X, baWAVE1_DEFENDER_SPAWN_Y);
 		}
 		console.log("Wave " + wave + " started!");
 		simTick();
@@ -133,13 +133,13 @@ function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
 		if (e.key === "t" && numTofu > 0 && repairTicksRemaining === 0) {
 			numTofu -= 1;
-			mAddItem(new fFood(plX, plY, currDefFood === "t", "t"));
+			mAddItem(new fFood(plDefX, plDefY, currDefFood === "t", "t"));
 		} else if (e.key === "c" && numCrackers > 0 && repairTicksRemaining === 0) {
 			numCrackers -= 1;
-			mAddItem(new fFood(plX, plY, currDefFood === "c", "c"));
+			mAddItem(new fFood(plDefX, plDefY, currDefFood === "c", "c"));
 		} else if (e.key === "w" && numWorms > 0 && repairTicksRemaining === 0) {
 			numWorms -= 1;
-			mAddItem(new fFood(plX, plY, currDefFood === "w", "w"));
+			mAddItem(new fFood(plDefX, plDefY, currDefFood === "w", "w"));
 		} else if (e.key === "1") {
 			pickingUpFood = "t";
 		} else if (e.key === "2") {
@@ -151,10 +151,10 @@ function simWindowOnKeyDown(e) {
 		} else if (e.key === "h") {
 			pickingUpHammer = true;
 		} else if (e.key === "r") {
-			if (repairTicksRemaining === 0 && ((isInEastRepairRange(plX, plY) && eastTrapState < 2 ) || (isInWestRepairRange(plX, plY) && westTrapState < 2))) {
+			if (repairTicksRemaining === 0 && ((isInEastRepairRange(plDefX, plDefY) && eastTrapState < 2 ) || (isInWestRepairRange(plDefX, plDefY) && westTrapState < 2))) {
 				if (hasHammer && numLogs > 0) {
 					repairTicksRemaining = 5;
-					if (plStandStillCounter === 0) {
+					if (plDefStandStillCounter === 0) {
 						++repairTicksRemaining;
 					}
 				}
@@ -184,7 +184,7 @@ function simCanvasOnMouseDown(e) {
 	let xTile = Math.trunc((e.clientX - canvasRect.left) / rrTileSize);
 	let yTile = Math.trunc((canvasRect.bottom - 1 - e.clientY) / rrTileSize);
 	if (e.button === 0) {
-		plPathfind(xTile, yTile);
+		plDefPathfind(xTile, yTile);
 	} else if (e.button === 2) {
 		if (xTile === baCollectorX && yTile === baCollectorY) {
 			baCollectorX = -1;
@@ -216,7 +216,7 @@ function simToggleRepairOnChange(e) {
 function simTick() {
 	if (!isPaused) {
 		baTick();
-		plTick();
+		plDefTick();
 		simDraw();
 	}
 }
@@ -225,7 +225,7 @@ function simDraw() {
 	baDrawDetails();
 	mDrawItems();
 	baDrawEntities();
-	plDrawPlayer();
+	plDefDrawPlayer();
 	mDrawGrid();
 	baDrawOverlays();
 	rPresent();
@@ -260,42 +260,42 @@ var pickingUpLogs; // true/false
 var pickingUpHammer; // true/false
 var repairTicksRemaining; // 0-5
 //}
-//{ Player - pl
-function plInit(x, y) {
-	plX = x;
-	plY = y;
+//{ PlayerDefender - plDef
+function plDefInit(x, y) {
+	plDefX = x;
+	plDefY = y;
 	pickingUpFood = "n";
 	pickingUpLogs = false;
 	pickingUpHammer = false;
 	repairTicksRemaining = 0;
-	plPathQueuePos = 0;
-	plPathQueueX = [];
-	plPathQueueY = [];
-	plShortestDistances = [];
-	plWayPoints = [];
-	plStandStillCounter = 0;
+	plDefPathQueuePos = 0;
+	plDefPathQueueX = [];
+	plDefPathQueueY = [];
+	plDefShortestDistances = [];
+	plDefWayPoints = [];
+	plDefStandStillCounter = 0;
 }
-function plTick() {
-	++plStandStillCounter;
-	let prevX = plX;
-	let prevY = plY;
+function plDefTick() {
+	++plDefStandStillCounter;
+	let prevX = plDefX;
+	let prevY = plDefY;
 	if (repairTicksRemaining > 0) {
 		if (repairTicksRemaining === 1) {
 			numLogs -=1;
-			if (isInEastRepairRange(plX, plY)) {
+			if (isInEastRepairRange(plDefX, plDefY)) {
 				eastTrapState = 2;
 			} else {
 				westTrapState = 2;
 			}
 		}
 		repairTicksRemaining -= 1;
-		plPathQueuePos = 0;
+		plDefPathQueuePos = 0;
 		pickingUpFood = "n";
 	} else if (pickingUpFood !== "n") {
-		let itemZone = mGetItemZone(plX >>> 3, plY >>> 3);
+		let itemZone = mGetItemZone(plDefX >>> 3, plDefY >>> 3);
 		for (let i = 0; i < itemZone.length; ++i) {
 			let item = itemZone[i];
-			if (plX === item.x && plY === item.y && item.type === pickingUpFood) {
+			if (plDefX === item.x && plDefY === item.y && item.type === pickingUpFood) {
 				itemZone.splice(i, 1);
 				if (pickingUpFood === "t") {
 					numTofu += 1;
@@ -308,15 +308,15 @@ function plTick() {
 			}
 		}
 		pickingUpFood = "n";
-		plPathQueuePos = 0;
+		plDefPathQueuePos = 0;
 	} else if (pickingUpLogs) {
 		let waveIs10 = mCurrentMap === mWAVE10;
-		if ((waveIs10 && plX === WAVE10_NW_LOGS_X && plY === WAVE10_NW_LOGS_Y) || (!waveIs10 && plX === WAVE1_NW_LOGS_X && plY === WAVE1_NW_LOGS_Y)) {
+		if ((waveIs10 && plDefX === WAVE10_NW_LOGS_X && plDefY === WAVE10_NW_LOGS_Y) || (!waveIs10 && plDefX === WAVE1_NW_LOGS_X && plDefY === WAVE1_NW_LOGS_Y)) {
 			if (northwestLogsState) {
 				numLogs += 1;
 				northwestLogsState = false;
 			}
-		}  else if ((waveIs10 && plX === WAVE10_SE_LOGS_X && plY === WAVE10_SE_LOGS_Y) || (!waveIs10 && plX === WAVE1_SE_LOGS_X && plY === WAVE1_SE_LOGS_Y)) {
+		}  else if ((waveIs10 && plDefX === WAVE10_SE_LOGS_X && plDefY === WAVE10_SE_LOGS_Y) || (!waveIs10 && plDefX === WAVE1_SE_LOGS_X && plDefY === WAVE1_SE_LOGS_Y)) {
 			if (southeastLogsState) {
 				numLogs += 1;
 				southeastLogsState = false;
@@ -324,118 +324,118 @@ function plTick() {
 		}
 		pickingUpLogs = false;
 	} else if (pickingUpHammer) {
-		if (hammerState && plX === HAMMER_X && plY === HAMMER_Y) {
+		if (hammerState && plDefX === HAMMER_X && plDefY === HAMMER_Y) {
 			hasHammer = true;
 			hammerState = false;
 		}
 		pickingUpHammer = false;
-	} else if (plPathQueuePos > 0) {
-		plX = plPathQueueX[--plPathQueuePos];
-		plY = plPathQueueY[plPathQueuePos];
-		if (plPathQueuePos > 0) {
-			plX = plPathQueueX[--plPathQueuePos];
-			plY = plPathQueueY[plPathQueuePos];
+	} else if (plDefPathQueuePos > 0) {
+		plDefX = plDefPathQueueX[--plDefPathQueuePos];
+		plDefY = plDefPathQueueY[plDefPathQueuePos];
+		if (plDefPathQueuePos > 0) {
+			plDefX = plDefPathQueueX[--plDefPathQueuePos];
+			plDefY = plDefPathQueueY[plDefPathQueuePos];
 		}
 	}
-	if (prevX !== plX || prevY !== plY) {
-		plStandStillCounter = 0;
+	if (prevX !== plDefX || prevY !== plDefY) {
+		plDefStandStillCounter = 0;
 	}
 }
-function plDrawPlayer() {
-	if (plX >= 0) {
+function plDefDrawPlayer() {
+	if (plDefX >= 0) {
 		rSetDrawColor(240, 240, 240, 200);
-		rrFill(plX, plY);
+		rrFill(plDefX, plDefY);
 	}
 }
-function plPathfind(destX, destY) {
+function plDefPathfind(destX, destY) {
 	for (let i = 0; i < mWidthTiles*mHeightTiles; ++i) {
-		plShortestDistances[i] = 99999999;
-		plWayPoints[i] = 0;
+		plDefShortestDistances[i] = 99999999;
+		plDefWayPoints[i] = 0;
 	}
-	plWayPoints[plX + plY*mWidthTiles] = 99;
-	plShortestDistances[plX + plY*mWidthTiles] = 0;
-	plPathQueuePos = 0;
+	plDefWayPoints[plDefX + plDefY*mWidthTiles] = 99;
+	plDefShortestDistances[plDefX + plDefY*mWidthTiles] = 0;
+	plDefPathQueuePos = 0;
 	let pathQueueEnd = 0;
-	plPathQueueX[pathQueueEnd] = plX;
-	plPathQueueY[pathQueueEnd++] = plY;
+	plDefPathQueueX[pathQueueEnd] = plDefX;
+	plDefPathQueueY[pathQueueEnd++] = plDefY;
 	let currentX;
 	let currentY;
 	let foundDestination = false;
-	while (plPathQueuePos !== pathQueueEnd) {
-		currentX = plPathQueueX[plPathQueuePos];
-		currentY = plPathQueueY[plPathQueuePos++];
+	while (plDefPathQueuePos !== pathQueueEnd) {
+		currentX = plDefPathQueueX[plDefPathQueuePos];
+		currentY = plDefPathQueueY[plDefPathQueuePos++];
 		if (currentX === destX && currentY === destY) {
 			foundDestination = true;
 			break;
 		}
-		let newDistance = plShortestDistances[currentX + currentY*mWidthTiles] + 1;
+		let newDistance = plDefShortestDistances[currentX + currentY*mWidthTiles] + 1;
 		let index = currentX - 1 + currentY*mWidthTiles;
-		if (currentX > 0 && plWayPoints[index] === 0 && (mCurrentMap[index] & 19136776) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX - 1;
-			plPathQueueY[pathQueueEnd++] = currentY;
-			plWayPoints[index] = 2;
-			plShortestDistances[index] = newDistance;
+		if (currentX > 0 && plDefWayPoints[index] === 0 && (mCurrentMap[index] & 19136776) === 0) {
+			plDefPathQueueX[pathQueueEnd] = currentX - 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY;
+			plDefWayPoints[index] = 2;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX + 1 + currentY*mWidthTiles;
-		if (currentX < mWidthTiles - 1 && plWayPoints[index] === 0 && (mCurrentMap[index] & 19136896) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX + 1;
-			plPathQueueY[pathQueueEnd++] = currentY;
-			plWayPoints[index] = 8;
-			plShortestDistances[index] = newDistance;
+		if (currentX < mWidthTiles - 1 && plDefWayPoints[index] === 0 && (mCurrentMap[index] & 19136896) === 0) {
+			plDefPathQueueX[pathQueueEnd] = currentX + 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY;
+			plDefWayPoints[index] = 8;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX + (currentY - 1)*mWidthTiles;
-		if (currentY > 0 && plWayPoints[index] === 0 && (mCurrentMap[index] & 19136770) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX;
-			plPathQueueY[pathQueueEnd++] = currentY - 1;
-			plWayPoints[index] = 1;
-			plShortestDistances[index] = newDistance;
+		if (currentY > 0 && plDefWayPoints[index] === 0 && (mCurrentMap[index] & 19136770) === 0) {
+			plDefPathQueueX[pathQueueEnd] = currentX;
+			plDefPathQueueY[pathQueueEnd++] = currentY - 1;
+			plDefWayPoints[index] = 1;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX + (currentY + 1)*mWidthTiles;
-		if (currentY < mHeightTiles - 1 && plWayPoints[index] === 0 && (mCurrentMap[index] & 19136800) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX;
-			plPathQueueY[pathQueueEnd++] = currentY + 1;
-			plWayPoints[index] = 4;
-			plShortestDistances[index] = newDistance;
+		if (currentY < mHeightTiles - 1 && plDefWayPoints[index] === 0 && (mCurrentMap[index] & 19136800) === 0) {
+			plDefPathQueueX[pathQueueEnd] = currentX;
+			plDefPathQueueY[pathQueueEnd++] = currentY + 1;
+			plDefWayPoints[index] = 4;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX - 1 + (currentY - 1)*mWidthTiles;
-		if (currentX > 0 && currentY > 0 && plWayPoints[index] === 0 &&
+		if (currentX > 0 && currentY > 0 && plDefWayPoints[index] === 0 &&
 		(mCurrentMap[index] & 19136782) == 0 &&
 		(mCurrentMap[currentX - 1 + currentY*mWidthTiles] & 19136776) === 0 &&
 		(mCurrentMap[currentX + (currentY - 1)*mWidthTiles] & 19136770) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX - 1;
-			plPathQueueY[pathQueueEnd++] = currentY - 1;
-			plWayPoints[index] = 3;
-			plShortestDistances[index] = newDistance;
+			plDefPathQueueX[pathQueueEnd] = currentX - 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY - 1;
+			plDefWayPoints[index] = 3;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX + 1 + (currentY - 1)*mWidthTiles;
-		if (currentX < mWidthTiles - 1 && currentY > 0 && plWayPoints[index] === 0 &&
+		if (currentX < mWidthTiles - 1 && currentY > 0 && plDefWayPoints[index] === 0 &&
 		(mCurrentMap[index] & 19136899) == 0 &&
 		(mCurrentMap[currentX + 1 + currentY*mWidthTiles] & 19136896) === 0 &&
 		(mCurrentMap[currentX + (currentY - 1)*mWidthTiles] & 19136770) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX + 1;
-			plPathQueueY[pathQueueEnd++] = currentY - 1;
-			plWayPoints[index] = 9;
-			plShortestDistances[index] = newDistance;
+			plDefPathQueueX[pathQueueEnd] = currentX + 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY - 1;
+			plDefWayPoints[index] = 9;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX - 1 + (currentY + 1)*mWidthTiles;
-		if (currentX > 0 && currentY < mHeightTiles - 1 && plWayPoints[index] === 0 &&
+		if (currentX > 0 && currentY < mHeightTiles - 1 && plDefWayPoints[index] === 0 &&
 		(mCurrentMap[index] & 19136824) == 0 &&
 		(mCurrentMap[currentX - 1 + currentY*mWidthTiles] & 19136776) === 0 &&
 		(mCurrentMap[currentX + (currentY + 1)*mWidthTiles] & 19136800) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX - 1;
-			plPathQueueY[pathQueueEnd++] = currentY + 1;
-			plWayPoints[index] = 6;
-			plShortestDistances[index] = newDistance;
+			plDefPathQueueX[pathQueueEnd] = currentX - 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY + 1;
+			plDefWayPoints[index] = 6;
+			plDefShortestDistances[index] = newDistance;
 		}
 		index = currentX + 1 + (currentY + 1)*mWidthTiles;
-		if (currentX < mWidthTiles - 1 && currentY < mHeightTiles - 1 && plWayPoints[index] === 0 &&
+		if (currentX < mWidthTiles - 1 && currentY < mHeightTiles - 1 && plDefWayPoints[index] === 0 &&
 		(mCurrentMap[index] & 19136992) == 0 &&
 		(mCurrentMap[currentX + 1 + currentY*mWidthTiles] & 19136896) === 0 &&
 		(mCurrentMap[currentX + (currentY + 1)*mWidthTiles] & 19136800) === 0) {
-			plPathQueueX[pathQueueEnd] = currentX + 1;
-			plPathQueueY[pathQueueEnd++] = currentY + 1;
-			plWayPoints[index] = 12;
-			plShortestDistances[index] = newDistance;
+			plDefPathQueueX[pathQueueEnd] = currentX + 1;
+			plDefPathQueueY[pathQueueEnd++] = currentY + 1;
+			plDefWayPoints[index] = 12;
+			plDefShortestDistances[index] = newDistance;
 		}
 	}
 	if (!foundDestination) {
@@ -445,7 +445,7 @@ function plPathfind(destX, destY) {
 		for (let x = destX - deviation; x <= destX + deviation; ++x) {
 			for (let y = destY - deviation; y <= destY + deviation; ++y) {
 				if (x >= 0 && y >= 0 && x < mWidthTiles && y < mHeightTiles) {
-					let distanceStart = plShortestDistances[x + y*mWidthTiles];
+					let distanceStart = plDefShortestDistances[x + y*mWidthTiles];
 					if (distanceStart < 100) {
 						let dx = Math.max(destX - x);
 						let dy = Math.max(destY - y);
@@ -462,15 +462,15 @@ function plPathfind(destX, destY) {
 			}
 		}
 		if (!foundDestination) {
-			plPathQueuePos = 0;
+			plDefPathQueuePos = 0;
 			return;
 		}
 	}
-	plPathQueuePos = 0;
-	while (currentX !== plX || currentY !== plY) {
-		let waypoint = plWayPoints[currentX + currentY*mWidthTiles];
-		plPathQueueX[plPathQueuePos] = currentX;
-		plPathQueueY[plPathQueuePos++] = currentY;
+	plDefPathQueuePos = 0;
+	while (currentX !== plDefX || currentY !== plDefY) {
+		let waypoint = plDefWayPoints[currentX + currentY*mWidthTiles];
+		plDefPathQueueX[plDefPathQueuePos] = currentX;
+		plDefPathQueueY[plDefPathQueuePos++] = currentY;
 		if ((waypoint & 2) !== 0) {
 			++currentX;
 		} else if ((waypoint & 8) !== 0) {
@@ -483,14 +483,14 @@ function plPathfind(destX, destY) {
 		}
 	}
 }
-var plPathQueuePos;
-var plShortestDistances;
-var plWayPoints;
-var plPathQueueX;
-var plPathQueueY;
-var plX;
-var plY;
-var plStandStillCounter;
+var plDefPathQueuePos;
+var plDefShortestDistances;
+var plDefWayPoints;
+var plDefPathQueueX;
+var plDefPathQueueY;
+var plDefX;
+var plDefY;
+var plDefStandStillCounter;
 //}
 //{ Food - f
 function fFood(x, y, isGood, type = "t") {
@@ -1053,7 +1053,7 @@ function isInWestRepairRange(x, y) {
 	return Math.abs(x - baWEST_TRAP_X) + Math.abs(y - baWEST_TRAP_Y) < 2;
 }
 function baTileBlocksPenance(x, y) {
-	if (x === plX && y === plY) {
+	if (x === plDefX && y === plDefY) {
 		return true;
 	}
 	if (x === baCollectorX && y === baCollectorY) {
@@ -1516,14 +1516,14 @@ var savepickingUpLogs; // true/false
 var savepickingUpHammer; // true/false
 var saverepairTicksRemaining; // 0-5
 
-var saveplPathQueuePos;
-var saveplShortestDistances;
-var saveplWayPoints;
-var saveplPathQueueX;
-var saveplPathQueueY;
-var saveplX;
-var saveplY;
-var saveplStandStillCounter;
+var saveplDefPathQueuePos;
+var saveplDefShortestDistances;
+var saveplDefWayPoints;
+var saveplDefPathQueueX;
+var saveplDefPathQueueY;
+var saveplDefX;
+var saveplDefY;
+var saveplDefStandStillCounter;
 
 var savemCurrentMap;
 var savemWidthTiles;
@@ -1592,14 +1592,14 @@ function saveGameState() {
 	savepickingUpHammer = pickingUpHammer;
 	saverepairTicksRemaining = repairTicksRemaining;
 
-	saveplPathQueuePos = plPathQueuePos;
-	saveplShortestDistances = deepCopy(plShortestDistances);
-	saveplWayPoints = deepCopy(plWayPoints);
-	saveplPathQueueX = deepCopy(plPathQueueX);
-	saveplPathQueueY = deepCopy(plPathQueueY);
-	saveplX = plX;
-	saveplY = plY;
-	saveplStandStillCounter = plStandStillCounter;
+	saveplDefPathQueuePos = plDefPathQueuePos;
+	saveplDefShortestDistances = deepCopy(plDefShortestDistances);
+	saveplDefWayPoints = deepCopy(plDefWayPoints);
+	saveplDefPathQueueX = deepCopy(plDefPathQueueX);
+	saveplDefPathQueueY = deepCopy(plDefPathQueueY);
+	saveplDefX = plDefX;
+	saveplDefY = plDefY;
+	saveplDefStandStillCounter = plDefStandStillCounter;
 
 	savemCurrentMap = mCurrentMap;
 	savemWidthTiles = mWidthTiles;
@@ -1665,14 +1665,14 @@ function loadGameState() {
 	pickingUpHammer = savepickingUpHammer;
 	repairTicksRemaining = saverepairTicksRemaining;
 
-	plPathQueuePos = saveplPathQueuePos;
-	plShortestDistances = deepCopy(saveplShortestDistances);
-	plWayPoints = deepCopy(saveplWayPoints);
-	plPathQueueX = deepCopy(saveplPathQueueX);
-	plPathQueueY = deepCopy(saveplPathQueueY);
-	plX = saveplX;
-	plY = saveplY;
-	plStandStillCounter = saveplStandStillCounter;
+	plDefPathQueuePos = saveplDefPathQueuePos;
+	plDefShortestDistances = deepCopy(saveplDefShortestDistances);
+	plDefWayPoints = deepCopy(saveplDefWayPoints);
+	plDefPathQueueX = deepCopy(saveplDefPathQueueX);
+	plDefPathQueueY = deepCopy(saveplDefPathQueueY);
+	plDefX = saveplDefX;
+	plDefY = saveplDefY;
+	plDefStandStillCounter = saveplDefStandStillCounter;
 
 	mCurrentMap = savemCurrentMap;
 	mWidthTiles = savemWidthTiles;
