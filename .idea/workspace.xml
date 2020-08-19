@@ -41,6 +41,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="12.18.3" />
@@ -98,7 +99,7 @@
       <workItem from="1597783575029" duration="5000" />
       <workItem from="1597783672463" duration="73000" />
       <workItem from="1597807443427" duration="7132000" />
-      <workItem from="1597819033036" duration="2852000" />
+      <workItem from="1597819033036" duration="4582000" />
     </task>
     <servers />
   </component>

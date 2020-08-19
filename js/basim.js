@@ -515,28 +515,29 @@ const rngEAST = 2;
 function rngRunnerRNG(forcedMovements) {
 	this.forcedMovements = forcedMovements;
 	this.forcedMovementsIndex = 0;
-}
-rngRunnerRNG.prototype.rollMovement = function() {
-	if (this.forcedMovements.length > this.forcedMovementsIndex) {
-		let movement = this.forcedMovements.charAt(this.forcedMovementsIndex++);
-		if (movement === "s") {
+
+	this.rollMovement = function() {
+		if (this.forcedMovements.length > this.forcedMovementsIndex) {
+			let movement = this.forcedMovements.charAt(this.forcedMovementsIndex++);
+			if (movement === "s") {
+				return rngSOUTH;
+			}
+			if (movement === "w") {
+				return rngWEST;
+			}
+			if (movement === "e") {
+				return rngEAST;
+			}
+		}
+		let rnd = Math.floor(Math.random() * 6);
+		if (rnd < 4) {
 			return rngSOUTH;
 		}
-		if (movement === "w") {
+		if (rnd === 4) {
 			return rngWEST;
 		}
-		if (movement === "e") {
-			return rngEAST;
-		}
+		return rngEAST;
 	}
-	let rnd = Math.floor(Math.random() * 6);
-	if (rnd < 4) {
-		return rngSOUTH;
-	}
-	if (rnd === 4) {
-		return rngWEST;
-	}
-	return rngEAST;
 }
 //}
 //{ Runner - ru
@@ -558,279 +559,294 @@ function ruRunner(x, y, runnerRNG, isWave10, id) {
 	this.runnerRNG = runnerRNG;
 	this.isWave10 = isWave10;
 	this.id = id;
-}
-ruRunner.prototype.tick = function() {
-	if (++this.cycleTick > 10) {
-		this.cycleTick = 1;
-	}
-	++this.standStillCounter;
-	if (this.despawnCountdown !== -1) {
-		if (--this.despawnCountdown === 0) {
-			baRunnersToRemove.push(this);
-			if (!this.isDying) {
-				--baRunnersAlive;
-			} else {
-				if (baIsNearEastTrap(this.x, this.y)) {
-					if (eastTrapState > 0) --eastTrapState;
-				}
-				if (baIsNearWestTrap(this.x, this.y)) {
-					if (westTrapState > 0) --westTrapState;
-				}
-			}
-		}
-	} else {
-		if (!this.isDying) {
-			switch(this.cycleTick) {
-			case 1:
-				this.doTick1();
-				break;
-			case 2:
-				this.doTick2Or5();
-				break;
-			case 3:
-				this.doTick3();
-				break;
-			case 4:
-				this.doTick4();
-				break;
-			case 5:
-				this.doTick2Or5();
-				break;
-			case 6:
-				this.doTick6();
-				break;
-			case 7:
-			case 8:
-			case 9:
-			case 10:
-				this.doTick7To10();
-				break;
-			}
-		}
-		if (this.isDying) {
-			if (this.standStillCounter > 2) {
-				++baRunnersKilled;
-				--baRunnersAlive;
-				this.print("Urghhh!");
-				this.despawnCountdown = 2;
-			}
-		}
-	}
-}
-ruRunner.prototype.doMovement = function() { // TODO: Doesn't consider diagonal movement block flags
-	let startX = this.x;
-	if (this.destinationX > startX) {
-		if (!baTileBlocksPenance(startX + 1, this.y) && mCanMoveEast(startX, this.y)) {
-			++this.x;
-			this.standStillCounter = 0;
-		}
-	} else if (this.destinationX < startX && !baTileBlocksPenance(startX - 1, this.y) && mCanMoveWest(startX, this.y)) {
-		--this.x;
-		this.standStillCounter = 0;
-	}
-	if (this.destinationY > this.y) {
-		if (!baTileBlocksPenance(startX, this.y + 1) && !baTileBlocksPenance(this.x, this.y + 1) && mCanMoveNorth(startX, this.y) && mCanMoveNorth(this.x, this.y)) {
-			++this.y;
-			this.standStillCounter = 0;
-		}
-	} else if (this.destinationY < this.y && !baTileBlocksPenance(startX, this.y - 1) && !baTileBlocksPenance(this.x, this.y - 1) && mCanMoveSouth(startX, this.y) && mCanMoveSouth(this.x, this.y)) {
-		--this.y;
-		this.standStillCounter = 0;
-	}
-}
-ruRunner.prototype.tryTargetFood = function() {
-	let xZone = this.x >> 3;
-	let yZone = this.y >> 3;
-	let firstFoodFound = null;
-	let endXZone = Math.max(xZone - 1 , 0);
-	let endYZone = Math.max(yZone - 1, 0);
-	for (let x = Math.min(xZone + 1, mItemZonesWidth - 1); x >= endXZone; --x) {
-		for (let y = Math.min(yZone + 1, mItemZonesHeight - 1); y >= endYZone; --y) {
-			let itemZone = mGetItemZone(x, y);
-			for (let foodIndex = itemZone.length - 1; foodIndex >= 0; --foodIndex) {
-				let food = itemZone[foodIndex];
-				if (!mHasLineOfSight(this.x, this.y, food.x, food.y)) {
-					continue;
-				}
-				if (firstFoodFound === null) {
-					firstFoodFound = food;
-				}
-				if (Math.max(Math.abs(this.x - food.x), Math.abs(this.y - food.y)) <= ruSniffDistance) {
-					this.foodTarget = firstFoodFound;
-					this.destinationX = firstFoodFound.x;
-					this.destinationY = firstFoodFound.y;
-					this.targetState = 0;
-					return;
-				}
-			}
-		}
-	}
-}
-ruRunner.prototype.tryEatAndCheckTarget = function() {
-	// experimental retarget mechanism on multikill tick
-	/*
-	if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
-		this.tryTargetFood();
-	}*/
-	if (this.foodTarget !== null) {
-		let itemZone = mGetItemZone(this.foodTarget.x >>> 3, this.foodTarget.y >>> 3);
-		let foodIndex = itemZone.indexOf(this.foodTarget);
-		if (foodIndex === -1) {
-			this.foodTarget = null;
-			this.targetState = 0;
-			return true;
-		} else if (this.x === this.foodTarget.x && this.y === this.foodTarget.y) {
-			if (this.foodTarget.isGood) {
-				this.print("Chomp, chomp.");
 
-				if (baIsNearEastTrap(this.x, this.y)) {
-					if (eastTrapState > 0 || requireRepairs === "no") {
-						this.isDying = true;
+	this.tick = function() {
+		if (++this.cycleTick > 10) {
+			this.cycleTick = 1;
+		}
+		++this.standStillCounter;
+		if (this.despawnCountdown !== -1) {
+			if (--this.despawnCountdown === 0) {
+				baRunnersToRemove.push(this);
+				if (!this.isDying) {
+					--baRunnersAlive;
+				} else {
+					if (baIsNearEastTrap(this.x, this.y)) {
+						if (eastTrapState > 0) --eastTrapState;
 					}
-				} else if (baIsNearWestTrap(this.x, this.y)) {
-					if (westTrapState > 0 || requireRepairs === "no") {
-						this.isDying = true;
+					if (baIsNearWestTrap(this.x, this.y)) {
+						if (westTrapState > 0) --westTrapState;
 					}
 				}
-			} else {
-				this.print("Blughhhh.");
-				this.blughhhhCountdown = 3;
+			}
+		} else {
+			if (!this.isDying) {
+				switch(this.cycleTick) {
+					case 1:
+						this.doTick1();
+						break;
+					case 2:
+						this.doTick2Or5();
+						break;
+					case 3:
+						this.doTick3();
+						break;
+					case 4:
+						this.doTick4();
+						break;
+					case 5:
+						this.doTick2Or5();
+						break;
+					case 6:
+						this.doTick6();
+						break;
+					case 7:
+					case 8:
+					case 9:
+					case 10:
+						this.doTick7To10();
+						break;
+				}
+			}
+			if (this.isDying) {
+				if (this.standStillCounter > 2) {
+					++baRunnersKilled;
+					--baRunnersAlive;
+					this.print("Urghhh!");
+					this.despawnCountdown = 2;
+				}
+			}
+		}
+	}
+
+	this.doMovement = function() { // TODO: Doesn't consider diagonal movement block flags
+		let startX = this.x;
+		if (this.destinationX > startX) {
+			if (!baTileBlocksPenance(startX + 1, this.y) && mCanMoveEast(startX, this.y)) {
+				++this.x;
+				this.standStillCounter = 0;
+			}
+		} else if (this.destinationX < startX && !baTileBlocksPenance(startX - 1, this.y) && mCanMoveWest(startX, this.y)) {
+			--this.x;
+			this.standStillCounter = 0;
+		}
+		if (this.destinationY > this.y) {
+			if (!baTileBlocksPenance(startX, this.y + 1) && !baTileBlocksPenance(this.x, this.y + 1) && mCanMoveNorth(startX, this.y) && mCanMoveNorth(this.x, this.y)) {
+				++this.y;
+				this.standStillCounter = 0;
+			}
+		} else if (this.destinationY < this.y && !baTileBlocksPenance(startX, this.y - 1) && !baTileBlocksPenance(this.x, this.y - 1) && mCanMoveSouth(startX, this.y) && mCanMoveSouth(this.x, this.y)) {
+			--this.y;
+			this.standStillCounter = 0;
+		}
+	}
+
+	this.tryTargetFood = function() {
+		let xZone = this.x >> 3;
+		let yZone = this.y >> 3;
+		let firstFoodFound = null;
+		let endXZone = Math.max(xZone - 1 , 0);
+		let endYZone = Math.max(yZone - 1, 0);
+		for (let x = Math.min(xZone + 1, mItemZonesWidth - 1); x >= endXZone; --x) {
+			for (let y = Math.min(yZone + 1, mItemZonesHeight - 1); y >= endYZone; --y) {
+				let itemZone = mGetItemZone(x, y);
+				for (let foodIndex = itemZone.length - 1; foodIndex >= 0; --foodIndex) {
+					let food = itemZone[foodIndex];
+					if (!mHasLineOfSight(this.x, this.y, food.x, food.y)) {
+						continue;
+					}
+					if (firstFoodFound === null) {
+						firstFoodFound = food;
+					}
+					if (Math.max(Math.abs(this.x - food.x), Math.abs(this.y - food.y)) <= ruSniffDistance) {
+						this.foodTarget = firstFoodFound;
+						this.destinationX = firstFoodFound.x;
+						this.destinationY = firstFoodFound.y;
+						this.targetState = 0;
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	this.tryEatAndCheckTarget = function() {
+		// experimental retarget mechanism on multikill tick
+		/*
+        if (baTickCounter > 1 && baTickCounter % 10 === 4) { // multikill tick
+            this.tryTargetFood();
+        }*/
+		if (this.foodTarget !== null) {
+			let itemZone = mGetItemZone(this.foodTarget.x >>> 3, this.foodTarget.y >>> 3);
+			let foodIndex = itemZone.indexOf(this.foodTarget);
+			if (foodIndex === -1) {
+				this.foodTarget = null;
 				this.targetState = 0;
-				if (this.cycleTick > 5) {
-					this.cycleTick -= 5;
+				return true;
+			} else if (this.x === this.foodTarget.x && this.y === this.foodTarget.y) {
+				if (this.foodTarget.isGood) {
+					this.print("Chomp, chomp.");
+
+					if (baIsNearEastTrap(this.x, this.y)) {
+						if (eastTrapState > 0 || requireRepairs === "no") {
+							this.isDying = true;
+						}
+					} else if (baIsNearWestTrap(this.x, this.y)) {
+						if (westTrapState > 0 || requireRepairs === "no") {
+							this.isDying = true;
+						}
+					}
+				} else {
+					this.print("Blughhhh.");
+					this.blughhhhCountdown = 3;
+					this.targetState = 0;
+					if (this.cycleTick > 5) {
+						this.cycleTick -= 5;
+					}
+					this.setDestinationBlughhhh();
 				}
-				this.setDestinationBlughhhh();
+				itemZone.splice(foodIndex, 1);
+				return true;
 			}
-			itemZone.splice(foodIndex, 1);
-			return true;
 		}
+		return false;
 	}
-	return false;
-}
-ruRunner.prototype.cancelDestination = function() {
-	this.destinationX = this.x;
-	this.destinationY = this.y;
-}
-ruRunner.prototype.setDestinationBlughhhh = function() {
-	this.destinationX = this.x;
-	if (this.isWave10) {
-		this.destinationY = baEAST_TRAP_Y - 4;
-	} else {
-		this.destinationY = baEAST_TRAP_Y + 4;
-	}
-}
-ruRunner.prototype.setDestinationRandomWalk = function() {
-	if (this.x <= 27) { // TODO: These same for wave 10?
-		if (this.y === 8 || this.y === 9) {	
-			this.destinationX = 30;
-			this.destinationY = 8;
-			return;
-		} else if (this.x === 25 && this.y === 7) {
-			this.destinationX = 26;
-			this.destinationY = 8;
-			return;
-		}
-	} else if (this.x <= 32) {
-		if (this.y <= 8) {
-			this.destinationX = 30;
-			this.destinationY = 6;
-			return;
-		}
-	} else if (this.y === 7 || this.y === 8){
-		this.destinationX = 31;
-		this.destinationY = 8;
-		return;
-	}
-	let direction = this.runnerRNG.rollMovement();
-	if (direction === rngSOUTH) {
+
+	this.cancelDestination = function() {
 		this.destinationX = this.x;
-		this.destinationY = this.y - 5;
-	} else if (direction === rngWEST) {
-		this.destinationX = this.x - 5;
-		if (this.destinationX < baWEST_TRAP_X - 1) { // TODO: Same for wave 10?
-			this.destinationX = baWEST_TRAP_X - 1;
-		}
 		this.destinationY = this.y;
-	} else {
-		this.destinationX = this.x + 5;
+	}
+
+	this.setDestinationBlughhhh = function() {
+		this.destinationX = this.x;
 		if (this.isWave10) {
-			if (this.destinationX > baEAST_TRAP_X - 1) {
-				this.destinationX = baEAST_TRAP_X - 1;
+			this.destinationY = baEAST_TRAP_Y - 4;
+		} else {
+			this.destinationY = baEAST_TRAP_Y + 4;
+		}
+	}
+
+	this.setDestinationRandomWalk = function() {
+		if (this.x <= 27) { // TODO: These same for wave 10?
+			if (this.y === 8 || this.y === 9) {
+				this.destinationX = 30;
+				this.destinationY = 8;
+				return;
+			} else if (this.x === 25 && this.y === 7) {
+				this.destinationX = 26;
+				this.destinationY = 8;
+				return;
 			}
-		} else if (this.destinationX > baEAST_TRAP_X) {
-			this.destinationX = baEAST_TRAP_X;
+		} else if (this.x <= 32) {
+			if (this.y <= 8) {
+				this.destinationX = 30;
+				this.destinationY = 6;
+				return;
+			}
+		} else if (this.y === 7 || this.y === 8){
+			this.destinationX = 31;
+			this.destinationY = 8;
+			return;
 		}
-		this.destinationY = this.y;
-	}
-}
-ruRunner.prototype.doTick1 = function() {
-	if (this.y === 6) {
-		this.despawnCountdown = 3;
-		this.print("Raaa!");
-		return;
-	}
-	if (this.blughhhhCountdown > 0) {
-		--this.blughhhhCountdown;
-	} else {
-		++this.targetState;
-		if (this.targetState > 3) {
-			this.targetState = 1;
+		let direction = this.runnerRNG.rollMovement();
+		if (direction === rngSOUTH) {
+			this.destinationX = this.x;
+			this.destinationY = this.y - 5;
+		} else if (direction === rngWEST) {
+			this.destinationX = this.x - 5;
+			if (this.destinationX < baWEST_TRAP_X - 1) { // TODO: Same for wave 10?
+				this.destinationX = baWEST_TRAP_X - 1;
+			}
+			this.destinationY = this.y;
+		} else {
+			this.destinationX = this.x + 5;
+			if (this.isWave10) {
+				if (this.destinationX > baEAST_TRAP_X - 1) {
+					this.destinationX = baEAST_TRAP_X - 1;
+				}
+			} else if (this.destinationX > baEAST_TRAP_X) {
+				this.destinationX = baEAST_TRAP_X;
+			}
+			this.destinationY = this.y;
 		}
 	}
-	let ateOrTargetGone = this.tryEatAndCheckTarget();
-	if (this.blughhhhCountdown === 0 && this.foodTarget === null) { // Could make this line same as tick 6 without any difference?
-		this.cancelDestination();
+
+	this.doTick1 = function() {
+		if (this.y === 6) {
+			this.despawnCountdown = 3;
+			this.print("Raaa!");
+			return;
+		}
+		if (this.blughhhhCountdown > 0) {
+			--this.blughhhhCountdown;
+		} else {
+			++this.targetState;
+			if (this.targetState > 3) {
+				this.targetState = 1;
+			}
+		}
+		let ateOrTargetGone = this.tryEatAndCheckTarget();
+		if (this.blughhhhCountdown === 0 && this.foodTarget === null) { // Could make this line same as tick 6 without any difference?
+			this.cancelDestination();
+		}
+		if (!ateOrTargetGone) {
+			this.doMovement();
+		}
 	}
-	if (!ateOrTargetGone) {
-		this.doMovement();
+
+	this.doTick2Or5 = function() {
+		if (this.targetState === 2) {
+			this.tryTargetFood();
+		}
+		this.doTick7To10();
 	}
-}
-ruRunner.prototype.doTick2Or5 = function() {
-	if (this.targetState === 2) {
-		this.tryTargetFood();
+
+	this.doTick3 = function() {
+		if (this.targetState === 3) {
+			this.tryTargetFood();
+		}
+		this.doTick7To10();
 	}
-	this.doTick7To10();
-}
-ruRunner.prototype.doTick3 = function() {
-	if (this.targetState === 3) {
-		this.tryTargetFood();
+
+	this.doTick4 = function() {
+		if (this.targetState === 1) {
+			this.tryTargetFood();
+		}
+		this.doTick7To10();
 	}
-	this.doTick7To10();
-}
-ruRunner.prototype.doTick4 = function() {
-	if (this.targetState === 1) {
-		this.tryTargetFood();
+
+	this.doTick6 = function() {
+		if (this.y === 6) {
+			this.despawnCountdown = 3;
+			this.print("Raaa!");
+			return;
+		}
+		if (this.blughhhhCountdown > 0) {
+			--this.blughhhhCountdown;
+		}
+		if (this.targetState === 3) {
+			this.tryTargetFood();
+		}
+		let ateOrTargetGone = this.tryEatAndCheckTarget();
+		if (this.blughhhhCountdown === 0 && (this.foodTarget === null || ateOrTargetGone)) {
+			this.setDestinationRandomWalk();
+		}
+		if (!ateOrTargetGone) {
+			this.doMovement();
+		}
 	}
-	this.doTick7To10();
-}
-ruRunner.prototype.doTick6 = function() {
-	if (this.y === 6) {
-		this.despawnCountdown = 3;
-		this.print("Raaa!");
-		return;
+
+	this.doTick7To10 = function() {
+		let ateOrTargetGone = this.tryEatAndCheckTarget();
+		if (!ateOrTargetGone) {
+			this.doMovement();
+		}
 	}
-	if (this.blughhhhCountdown > 0) {
-		--this.blughhhhCountdown;
+
+	this.print = function(string) {
+		console.log(baTickCounter + ": Runner " + this.id + ": " + string);
 	}
-	if (this.targetState === 3) {
-		this.tryTargetFood();
-	}
-	let ateOrTargetGone = this.tryEatAndCheckTarget();
-	if (this.blughhhhCountdown === 0 && (this.foodTarget === null || ateOrTargetGone)) {
-		this.setDestinationRandomWalk();
-	}
-	if (!ateOrTargetGone) {
-		this.doMovement();
-	}
-}
-ruRunner.prototype.doTick7To10 = function() {
-	let ateOrTargetGone = this.tryEatAndCheckTarget();
-	if (!ateOrTargetGone) {
-		this.doMovement();
-	}
-}
-ruRunner.prototype.print = function(string) {
-	console.log(baTickCounter + ": Runner " + this.id + ": " + string);
+
 }
 var ruSniffDistance;
 //}
@@ -1564,6 +1580,12 @@ function v8deepCopy(obj) {
 	return v8.deserialize(v8.serialize(obj));
 }
 
+const clonedeep = require('lodash.clonedeep');
+
+function lodashDeepCopy(obj) {
+	return clonedeep(obj);
+}
+
 function saveGameState() {
 	isPaused = true; // pause before saving
 
@@ -1591,7 +1613,7 @@ function saveGameState() {
 	savesoutheastLogsState = southeastLogsState;
 	savehammerState = hammerState;
 	savebaCollectorX = baCollectorX;
-	savebaRunnerMovements = otherDeepCopy(baRunnerMovements);
+	savebaRunnerMovements = deepCopy(baRunnerMovements);
 	savebaRunnerMovementsIndex = baRunnerMovementsIndex;
 	savebaCurrentRunnerId = baCurrentRunnerId;
 	saveisPaused = isPaused;
@@ -1603,10 +1625,10 @@ function saveGameState() {
 	saverepairTicksRemaining = repairTicksRemaining;
 
 	saveplDefPathQueuePos = plDefPathQueuePos;
-	saveplDefShortestDistances = otherDeepCopy(plDefShortestDistances);
-	saveplDefWayPoints = otherDeepCopy(plDefWayPoints);
-	saveplDefPathQueueX = otherDeepCopy(plDefPathQueueX);
-	saveplDefPathQueueY = otherDeepCopy(plDefPathQueueY);
+	saveplDefShortestDistances = deepCopy(plDefShortestDistances);
+	saveplDefWayPoints = deepCopy(plDefWayPoints);
+	saveplDefPathQueueX = deepCopy(plDefPathQueueX);
+	saveplDefPathQueueY = deepCopy(plDefPathQueueY);
 	saveplDefX = plDefX;
 	saveplDefY = plDefY;
 	saveplDefStandStillCounter = plDefStandStillCounter;
@@ -1614,7 +1636,7 @@ function saveGameState() {
 	savemCurrentMap = mCurrentMap;
 	savemWidthTiles = mWidthTiles;
 	savemHeightTiles = mHeightTiles;
-	savemItemZones = otherDeepCopy(mItemZones);
+	savemItemZones = deepCopy(mItemZones);
 	savemItemZonesWidth = mItemZonesWidth;
 	savemItemZonesHeight = mItemZonesHeight;
 
@@ -1664,7 +1686,7 @@ function loadGameState() {
 	southeastLogsState = savesoutheastLogsState;
 	hammerState = savehammerState;
 	baCollectorX = savebaCollectorX;
-	baRunnerMovements = otherDeepCopy(savebaRunnerMovements);
+	baRunnerMovements = deepCopy(savebaRunnerMovements);
 	baRunnerMovementsIndex = savebaRunnerMovementsIndex;
 	baCurrentRunnerId = savebaCurrentRunnerId;
 	isPaused = saveisPaused;
@@ -1676,10 +1698,10 @@ function loadGameState() {
 	repairTicksRemaining = saverepairTicksRemaining;
 
 	plDefPathQueuePos = saveplDefPathQueuePos;
-	plDefShortestDistances = otherDeepCopy(saveplDefShortestDistances);
-	plDefWayPoints = otherDeepCopy(saveplDefWayPoints);
-	plDefPathQueueX = otherDeepCopy(saveplDefPathQueueX);
-	plDefPathQueueY = otherDeepCopy(saveplDefPathQueueY);
+	plDefShortestDistances = deepCopy(saveplDefShortestDistances);
+	plDefWayPoints = deepCopy(saveplDefWayPoints);
+	plDefPathQueueX = deepCopy(saveplDefPathQueueX);
+	plDefPathQueueY = deepCopy(saveplDefPathQueueY);
 	plDefX = saveplDefX;
 	plDefY = saveplDefY;
 	plDefStandStillCounter = saveplDefStandStillCounter;
@@ -1687,7 +1709,7 @@ function loadGameState() {
 	mCurrentMap = savemCurrentMap;
 	mWidthTiles = savemWidthTiles;
 	mHeightTiles = savemHeightTiles;
-	mItemZones = otherDeepCopy(savemItemZones);
+	mItemZones = deepCopy(savemItemZones);
 	mItemZonesWidth = savemItemZonesWidth;
 	mItemZonesHeight = savemItemZonesHeight;
 
