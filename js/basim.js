@@ -9,6 +9,8 @@ const HTML_TOGGLE_REPAIR = 'togglerepair'
 const HTML_TOGGLE_PAUSE_SL = 'togglepausesl';
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
 const HTML_TICK_DURATION = "tickduration";
+const HTML_TOGGLE_INFINITE_FOOD = "toggleinfinitefood";
+const HTML_TOGGLE_LOG_HAMMER_TO_REPAIR = "toggleloghammertorepair";
 
 window.onload = simInit;
 //{ Simulation - sim
@@ -30,6 +32,10 @@ function simInit() {
 	simToggleRepair.onchange = simToggleRepairOnChange;
 	simTogglePauseSL = document.getElementById(HTML_TOGGLE_PAUSE_SL);
 	simTogglePauseSL.onchange = simTogglePauseSLOnChange;
+	simToggleInfiniteFood = document.getElementById(HTML_TOGGLE_INFINITE_FOOD);
+	simToggleInfiniteFood.onchange = simToggleInfiniteFoodOnChange;
+	simToggleLogHammerToRepair = document.getElementById(HTML_TOGGLE_LOG_HAMMER_TO_REPAIR);
+	simToggleLogHammerToRepair.onchange = simToggleLogHammerToRepairOnChange;
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
@@ -134,13 +140,13 @@ function simParseMovementsInput() {
 }
 function simWindowOnKeyDown(e) {
 	if (simIsRunning) {
-		if (e.key === "t" && numTofu > 0 && repairTicksRemaining === 0) {
+		if (e.key === "t" && (numTofu > 0 || infiniteFood === "yes") && repairTicksRemaining === 0) {
 			numTofu -= 1;
 			mAddItem(new fFood(plDefX, plDefY, currDefFood === "t", "t"));
-		} else if (e.key === "c" && numCrackers > 0 && repairTicksRemaining === 0) {
+		} else if (e.key === "c" && (numCrackers > 0 || infiniteFood === "yes") && repairTicksRemaining === 0) {
 			numCrackers -= 1;
 			mAddItem(new fFood(plDefX, plDefY, currDefFood === "c", "c"));
-		} else if (e.key === "w" && numWorms > 0 && repairTicksRemaining === 0) {
+		} else if (e.key === "w" && (numWorms > 0 || infiniteFood === "yes") && repairTicksRemaining === 0) {
 			numWorms -= 1;
 			mAddItem(new fFood(plDefX, plDefY, currDefFood === "w", "w"));
 		} else if (e.key === "1") {
@@ -155,7 +161,7 @@ function simWindowOnKeyDown(e) {
 			pickingUpHammer = true;
 		} else if (e.key === "r") {
 			if (repairTicksRemaining === 0 && ((isInEastRepairRange(plDefX, plDefY) && eastTrapState < 2 ) || (isInWestRepairRange(plDefX, plDefY) && westTrapState < 2))) {
-				if (hasHammer && numLogs > 0) {
+				if ((hasHammer && numLogs > 0) || logHammerToRepair === "no") {
 					repairTicksRemaining = 5;
 					if (plDefStandStillCounter === 0) {
 						++repairTicksRemaining;
@@ -168,8 +174,9 @@ function simWindowOnKeyDown(e) {
 			if (isPaused || pauseSL !== "yes") {
 				isPaused = true;
 				saveGameState();
+				saveExists = true;
 			}
-		} else if (e.key === "y") {
+		} else if (e.key === "y" && saveExists) {
 			if (isPaused || pauseSL !== "yes") {
 				isPaused = true;
 				loadGameState();
@@ -182,6 +189,7 @@ function simWindowOnKeyDown(e) {
 	}
 }
 
+var saveExists = false;
 var isPaused; // true/false
 
 function simCanvasOnMouseDown(e) {
@@ -220,6 +228,12 @@ function simToggleRepairOnChange(e) {
 function simTogglePauseSLOnChange(e) {
 	pauseSL = simTogglePauseSL.value;
 }
+function simToggleInfiniteFoodOnChange(e) {
+	infiniteFood = simToggleInfiniteFood.value;
+}
+function simToggleLogHammerToRepairOnChange(e) {
+	logHammerToRepair = simToggleLogHammerToRepair.value;
+}
 //*/
 function simTick() {
 	if (!isPaused) {
@@ -249,6 +263,8 @@ var simIsRunning;
 var currDefFoodSpan;
 var simTickDurationInput;
 var simTogglePauseSL;
+var simToggleInfiniteFood;
+var simToggleLogHammerToRepair;
 
 var numTofu; // 0-9
 var numCrackers; // 0-9
@@ -263,8 +279,9 @@ var southeastLogsState; // true/false
 var hammerState; // true/false
 
 var requireRepairs;
-
 var pauseSL;
+var infiniteFood;
+var logHammerToRepair;
 
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
@@ -1764,6 +1781,8 @@ function loadGameState() {
 
 	requireRepairs = simToggleRepair.value;
 	pauseSL = simTogglePauseSL.value;
+	infiniteFood = simToggleInfiniteFood.value;
+	logHammerToRepair = simToggleLogHammerToRepair.value;
 
 	simDraw();
 }
