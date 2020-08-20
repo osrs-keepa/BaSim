@@ -6,6 +6,7 @@ const HTML_WAVE_SELECT = "waveselect";
 const HTML_TICK_COUNT = "tickcount";
 const HTML_DEF_LEVEL_SELECT = "deflevelselect";
 const HTML_TOGGLE_REPAIR = 'togglerepair'
+const HTML_TOGGLE_PAUSE_SL = 'togglepausesl';
 const HTML_CURRENT_DEF_FOOD = "currdeffood";
 const HTML_TICK_DURATION = "tickduration";
 
@@ -27,6 +28,8 @@ function simInit() {
 	simDefLevelSelect = document.getElementById(HTML_DEF_LEVEL_SELECT);
 	simToggleRepair = document.getElementById(HTML_TOGGLE_REPAIR);
 	simToggleRepair.onchange = simToggleRepairOnChange;
+	simTogglePauseSL = document.getElementById(HTML_TOGGLE_PAUSE_SL);
+	simTogglePauseSL.onchange = simTogglePauseSLOnChange;
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
@@ -162,11 +165,13 @@ function simWindowOnKeyDown(e) {
 		} else if (e.key === "p") {
 			isPaused = !isPaused;
 		} else if (e.key === "s") {
-			if (isPaused) {
+			if (isPaused || pauseSL !== "yes") {
+				isPaused = true;
 				saveGameState();
 			}
 		} else if (e.key === "y") {
-			if (isPaused) {
+			if (isPaused || pauseSL !== "yes") {
+				isPaused = true;
 				loadGameState();
 			}
 		}
@@ -212,6 +217,9 @@ function simDefLevelSelectOnChange(e) {
 function simToggleRepairOnChange(e) {
 	requireRepairs = simToggleRepair.value;
 }
+function simTogglePauseSLOnChange(e) {
+	pauseSL = simTogglePauseSL.value;
+}
 //*/
 function simTick() {
 	if (!isPaused) {
@@ -240,6 +248,7 @@ var simTickCountSpan;
 var simIsRunning;
 var currDefFoodSpan;
 var simTickDurationInput;
+var simTogglePauseSL;
 
 var numTofu; // 0-9
 var numCrackers; // 0-9
@@ -254,6 +263,8 @@ var southeastLogsState; // true/false
 var hammerState; // true/false
 
 var requireRepairs;
+
+var pauseSL;
 
 var pickingUpFood; // "t", "c", "w", "n"
 var pickingUpLogs; // true/false
@@ -1623,7 +1634,7 @@ function saveGameState() {
 	saveisPaused = isPaused;
 	savebaCollectorY = baCollectorY;
 
-	saverequireRepairs = requireRepairs;
+	//saverequireRepairs = requireRepairs;
 	savepickingUpFood = pickingUpFood;
 	savepickingUpHammer = pickingUpHammer;
 	saverepairTicksRemaining = repairTicksRemaining;
@@ -1696,7 +1707,7 @@ function loadGameState() {
 	isPaused = saveisPaused;
 	baCollectorY = savebaCollectorY;
 
-	requireRepairs = saverequireRepairs;
+	//requireRepairs = saverequireRepairs;
 	pickingUpFood = savepickingUpFood;
 	pickingUpHammer = savepickingUpHammer;
 	repairTicksRemaining = saverepairTicksRemaining;
@@ -1750,6 +1761,9 @@ function loadGameState() {
 			}
 		}
 	}
+
+	requireRepairs = simToggleRepair.value;
+	pauseSL = simTogglePauseSL.value;
 
 	simDraw();
 }
