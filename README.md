@@ -17,3 +17,5 @@ I am using this as an excuse to learn JavaScript + Node.js and test out reinforc
 - Customizable tick duration
 - Pause/unpause
 - Save/load game state
+- Toggleable infinite food
+- Toggleable hammer+log requirement to repair
