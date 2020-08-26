@@ -1,4 +1,4 @@
-# BaSim (modified by 96jonesa)
+# BaSim (modified and expanded by 96jonesa)
 
 Fork of Henke's Old School RuneScape Barbarian Assault simulator. At the time of forking, the simulator only supported Runners, Defenders, and Collectors.
 
