@@ -22,6 +22,8 @@ I am using this as an opportunity to learn JavaScript + Node.js and test out rei
 
 # Current Focus
 
+(September 9, 2020) I have taken a break from my break (in which I am learning JavaScript and Node.js) in order to exhaustively solve for Defender strategies using highly abstracted action spaces motivated by current metas on each wave. This is effective because the high level objectives of these waves are well-defined. These solutions, the pursuit of them, and my own application of these strategies, are all contributing to a drastic improvement in my ability to identify useful abstractions for use in reinforcement learning on the full game.
+
 (August 27, 2020) The project's code has grown quite a bit and I have proven the concept enough to motivate going forward with it, so I will be spending the next couple weeks learning JavaScript + Node.js away from this project so that I can better organize the current and future code. Tentative study to include:
 
 - https://www.coursera.org/learn/web-applications-php
