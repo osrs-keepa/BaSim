@@ -545,11 +545,10 @@ const rngWEST = 1;
 const rngEAST = 2;
 function rngRunnerRNG(forcedMovements) {
 	this.forcedMovements = forcedMovements;
-	this.forcedMovementsIndex = 0;
 
-	this.rollMovement = function() {
-		if (this.forcedMovements.length > this.forcedMovementsIndex) {
-			let movement = this.forcedMovements.charAt(this.forcedMovementsIndex++);
+	this.rollMovement = function(forcedMovementsIndex) {
+		if (this.forcedMovements.length > forcedMovementsIndex) {
+			let movement = this.forcedMovements.charAt(forcedMovementsIndex++);
 			if (movement === "s") {
 				return rngSOUTH;
 			}
@@ -590,6 +589,7 @@ function ruRunner(x, y, runnerRNG, isWave10, id) {
 	this.runnerRNG = runnerRNG;
 	this.isWave10 = isWave10;
 	this.id = id;
+	this.forcedMovementsIndex = 0;
 
 	this.tick = function() {
 		if (++this.cycleTick > 10) {
@@ -779,7 +779,8 @@ function ruRunner(x, y, runnerRNG, isWave10, id) {
 			this.destinationY = 8;
 			return;
 		}
-		let direction = this.runnerRNG.rollMovement();
+		let direction = this.runnerRNG.rollMovement(this.forcedMovementsIndex);
+		this.forcedMovementsIndex++;
 		if (direction === rngSOUTH) {
 			this.destinationX = this.x;
 			this.destinationY = this.y - 5;
@@ -1785,4 +1786,7 @@ function loadGameState() {
 	logHammerToRepair = simToggleLogHammerToRepair.value;
 
 	simDraw();
+
+	console.log(baRunnerMovements);
+	console.log(baRunnerMovementsIndex);
 }
