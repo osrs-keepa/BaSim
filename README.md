@@ -22,7 +22,7 @@ I am using this as an opportunity to learn JavaScript + Node.js and test out rei
 
 # Current Focus
 
-(October 10, 2020) After quite a while away from the project due to other commitments, I will be reimplementing the backend without the interactive GUI in C++ soonish. The lack of multithreading in Node.js is prohibitively lame. This will take priority over reorganization of the JavaScript code.
+(October 10, 2020) After quite a while away from the project due to other commitments, I have decided that I will be reimplementing the backend without the interactive GUI in C++ soonish. The lack of multithreading in Node.js is prohibitively lame. This will take priority over reorganization of the JavaScript code. This will occur whenever I have free time, which will likely be a while away due to my return to university.
 
 (September 9, 2020) I have taken a break from my break (in which I am learning JavaScript and Node.js) in order to exhaustively solve for Defender strategies using highly abstracted action and state spaces motivated by current metas on each wave. This is effective because the high level objectives of these waves are well-defined. These solutions, the pursuit of them, and my own application of these strategies, are all contributing to a drastic improvement in my ability to identify useful abstractions for use in reinforcement learning on the full game.
 
