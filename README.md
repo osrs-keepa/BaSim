@@ -1,6 +1,7 @@
 # BaSim (modified and expanded by 96jonesa)
 
-Currently reimplementing the backend in C++ for multithreaded solving and access to preferred learning frameworks.
+Currently reimplementing the backend in C++ for multithreaded solving and access to preferred learning frameworks:
+https://github.com/96jonesa/BaSimCxx
 
 Fork of Henke's Old School RuneScape Barbarian Assault simulator. At the time of forking, the simulator only supported Runners, Defenders, and Collectors, each with limited/simplified behavior.
 
