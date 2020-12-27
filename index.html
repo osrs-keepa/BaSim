@@ -51,8 +51,18 @@ Tick duration (milliseconds): <input id="tickduration" type="number" min="100" m
 <b>h</b> picks up hammer.<br>
 <b>r</b> repairs a trap.<br>
 <b>p</b> pauses/unpauses.<br>
-<b>s</b> saves state (must be paused).<br>
-<b>y</b> loads state (must be running, and must be paused).<br>
+<b>s</b> saves state (pauses).<br>
+<b>y</b> loads state (must be running) (pauses).<br>
+<br>
+<b>Repairs required:</b> If 'Yes' then traps must be repaired for runner to die at them, if 'No' then broken traps can kill runners.<br>
+<b>Infinite food:</b> If 'Yes' then you have infinite food, if 'No' then start with 9 of each.<br>
+<b>Require log and hammer to repair:</b> If 'Yes' then you must have a log and hammer to repair a trap, if 'No' then can repair without.<br>
+<b>Pause to save/load:</b> If 'Yes' then you must pause before saving/loading, if 'No' then can save/load while unpaused.<br>
+<b>Runner movements:</b> Forced runner movements. For example, 'ww-e-s' for first runner west west, second runner east, third runner south.<br>
+<b>Tick duration (milliseconds):</b> Set the length of a game tick.<br>
+<b>Toggle tile marker mode:</b> Click to to switch between movement and tile marker mode.<br>
+While in tile marker mode, left-clicking an unmarked tile will mark it and left-clicking a marked tile will unmark it.<br>
+Click the colored rectangle beside 'Marker' to change the color of marked tiles.<br>
 <br>
 <b>Save/Load (Experimental - let me know of any bugs):</b><br>
 If you save with <b>s</b>, then loading with <b>y</b> will bring to to the same state on the same wave you saved. Unpause with <b>p</b><br>
