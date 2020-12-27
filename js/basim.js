@@ -11,8 +11,14 @@ const HTML_CURRENT_DEF_FOOD = "currdeffood";
 const HTML_TICK_DURATION = "tickduration";
 const HTML_TOGGLE_INFINITE_FOOD = "toggleinfinitefood";
 const HTML_TOGGLE_LOG_HAMMER_TO_REPAIR = "toggleloghammertorepair";
+const HTML_MARKER_COLOR = "marker";
 
 window.onload = simInit;
+
+var simMarkingTiles;
+
+var simMarkedTiles;
+
 //{ Simulation - sim
 function simInit() {
 	let canvas = document.getElementById(HTML_CANVAS);
@@ -39,8 +45,11 @@ function simInit() {
 	simDefLevelSelect.onchange = simDefLevelSelectOnChange;
 	simTickCountSpan = document.getElementById(HTML_TICK_COUNT);
 	currDefFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
+	simMarkerColorInput = document.getElementById(HTML_MARKER_COLOR);
 	rInit(canvas, 64*12, 48*12);
 	rrInit(12);
+	simMarkingTiles = false;
+	simMarkedTiles = [];
 	mInit(mWAVE_1_TO_9, 64, 48);
 	ruInit(5);
 	simReset();
@@ -197,7 +206,24 @@ function simCanvasOnMouseDown(e) {
 	let xTile = Math.trunc((e.clientX - canvasRect.left) / rrTileSize);
 	let yTile = Math.trunc((canvasRect.bottom - 1 - e.clientY) / rrTileSize);
 	if (e.button === 0) {
-		plDefPathfind(xTile, yTile);
+		if (simMarkingTiles) {
+			var tileAlreadyMarked = false;
+			for (let i = 0; i < simMarkedTiles.length; i++) {
+				if ((simMarkedTiles[i][0] === xTile) && (simMarkedTiles[i][1] === yTile)) {
+					tileAlreadyMarked = true;
+					simMarkedTiles.splice(i, 1);
+				}
+			}
+			if (!tileAlreadyMarked) {
+				simMarkedTiles.push([xTile, yTile]);
+			}
+
+			if (!simIsRunning) {
+				simDraw();
+			}
+		} else {
+			plDefPathfind(xTile, yTile);
+		}
 	} else if (e.button === 2) {
 		if (xTile === baCollectorX && yTile === baCollectorY) {
 			baCollectorX = -1;
@@ -208,6 +234,10 @@ function simCanvasOnMouseDown(e) {
 	}
 }
 //*/
+
+function toggleMarkingTiles() {
+	simMarkingTiles = !simMarkingTiles;
+}
 
 function simWaveSelectOnChange(e) {
 	if (simWaveSelect.value === "10") {
@@ -265,6 +295,7 @@ var simTickDurationInput;
 var simTogglePauseSL;
 var simToggleInfiniteFood;
 var simToggleLogHammerToRepair;
+var simMarkerColorInput;
 
 var numTofu; // 0-9
 var numCrackers; // 0-9
@@ -906,6 +937,8 @@ const WAVE10_SE_LOGS_X = 30;
 const WAVE10_SE_LOGS_Y = 38;
 const HAMMER_X = 32;
 const HAMMER_Y = 34;
+
+var baMarkerColor;
 function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	baRunners = [];
 	baRunnersToRemove = [];
@@ -933,6 +966,8 @@ function baInit(maxRunnersAlive, totalRunners, runnerMovements) {
 	currDefFoodSpan.innerHTML = currDefFood;
 	isPaused = false;
 	foodIDCounter = 0;
+
+	baMarkerColor = Number("0x" + simMarkerColorInput.value.substring(1));
 }
 function baTick() {
 	++baTickCounter;
@@ -1259,6 +1294,11 @@ function mDrawMap() {
 				}
 			}
 		}
+	}
+
+	rSetDrawColor((baMarkerColor >> 16) & 255, (baMarkerColor >> 8) & 255, baMarkerColor & 255, 255);
+	for (let i = 0; i < simMarkedTiles.length; i++) {
+		rrFill(simMarkedTiles[i][0], simMarkedTiles[i][1]);
 	}
 }
 function mHasLineOfSight(x1, y1, x2, y2) {
