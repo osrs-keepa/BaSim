@@ -1298,7 +1298,7 @@ function mDrawMap() {
 
 	rSetDrawColor((baMarkerColor >> 16) & 255, (baMarkerColor >> 8) & 255, baMarkerColor & 255, 255);
 	for (let i = 0; i < simMarkedTiles.length; i++) {
-		rrFill(simMarkedTiles[i][0], simMarkedTiles[i][1]);
+		rrOutline(simMarkedTiles[i][0], simMarkedTiles[i][1]);
 	}
 }
 function mHasLineOfSight(x1, y1, x2, y2) {
