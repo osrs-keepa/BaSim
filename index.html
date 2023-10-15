@@ -25,7 +25,7 @@ Infinite food: <select id="toggleinfinitefood">
     <option value="no">No</option>
     <option value="yes">Yes</option>
 </select><br>
-Require log and hammer to repair: <select id="toggleloghammertorepair">
+Require log to repair: <select id="toggleloghammertorepair">
     <option value="yes">Yes</option>
     <option value="no">No</option>
 </select><br>
@@ -48,7 +48,6 @@ Tick duration (milliseconds): <input id="tickduration" type="number" min="100" m
 <b>2</b> picks up crackers.<br>
 <b>3</b> picks up worms.<br>
 <b>l</b> picks up logs.<br>
-<b>h</b> picks up hammer.<br>
 <b>r</b> repairs a trap.<br>
 <b>p</b> pauses/unpauses.<br>
 <b>s</b> saves state (pauses).<br>
@@ -73,6 +72,7 @@ Although the wave and defender level will behave the same as when you saved, the
 So, if you change the selection, start, then load: you will load from the saved wave and level, but they will not change in selectors.<br>
 If you then stop and start the wave, it will play with the wave and level displayed in the selectors normally (not from loaded wave/level).<br>
 <br>
+It is always assumed the defender has a hammer equipped - there is no need to pick up the hammer.<br>
 First food is always tofu (for convenience), changes to random new food every 50 ticks (52, 102, 152, etc.).<br>
 <br>
 To multikill, move off stack when last digit of tick is 1. They will eat when last digit is 4.<br>
