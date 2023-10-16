@@ -255,7 +255,7 @@ export class DefenderPlayer {
         const foodZone: FoodZone = barbarianAssault.map.getFoodZone(this.position.x >>> 3, this.position.y >>> 3);
 
         for (let i: number = 0; i < foodZone.foodList.length; i++) {
-            const food: Food = foodZone[i];
+            const food: Food = foodZone.foodList[i];
 
             if (this.position.x === food.position.x && this.position.y === food.position.y && food.type === this.foodBeingPickedUp) {
                 foodZone.foodList.splice(i, 1);
