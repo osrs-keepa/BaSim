@@ -197,7 +197,7 @@ export class BarbarianAssault {
 
     public clone(): BarbarianAssault {
         let barbarianAssault: BarbarianAssault = new BarbarianAssault(this.wave, this.requireRepairs, this.requireLogs, this.infiniteFood, this.runnerMovements, this.defenderLevel);
-        barbarianAssault.map = this.map.clone();
+        barbarianAssault.map = this.map === null ? null : this.map.clone();
         barbarianAssault.ticks = this.ticks;
         barbarianAssault.wave = this.wave;
         barbarianAssault.maxRunnersAlive = this.maxRunnersAlive;

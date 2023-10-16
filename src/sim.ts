@@ -219,19 +219,6 @@ function load(): void {
     draw();
 }
 
-function deepCopy(object) {
-    let copy = Array.isArray(object) ? [] : {};
-
-    let value;
-
-    for (const key in object) {
-        value = object[key];
-        copy[key] = (value === null) ? null : (typeof value === "object") ? deepCopy(value) : value;
-    }
-
-    return copy;
-}
-
 function canvasOnMouseDown(mouseEvent: MouseEvent): void {
     const canvasRect: DOMRect = renderer.canvas.getBoundingClientRect();
     const xTile: number = Math.trunc((mouseEvent.clientX - canvasRect.left) / renderer.tileSize);

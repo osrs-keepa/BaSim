@@ -179,19 +179,10 @@ function load() {
     tickCountSpan.innerHTML = savedTickCountSpanInnerHTML;
     currentDefenderFoodSpan.innerHTML = savedCurrentDefenderFoodSpanInnerHTML;
     barbarianAssault = savedBarbarianAssault;
-    console.log(barbarianAssault.runnerMovements);
-    console.log(barbarianAssault.runnerMovementsIndex);
+    // the existing save state will mutate as the simulator proceeds,
+    // so re-clone the save state in case of subsequent loads
     save();
     draw();
-}
-function deepCopy(object) {
-    let copy = Array.isArray(object) ? [] : {};
-    let value;
-    for (const key in object) {
-        value = object[key];
-        copy[key] = (value === null) ? null : (typeof value === "object") ? deepCopy(value) : value;
-    }
-    return copy;
 }
 function canvasOnMouseDown(mouseEvent) {
     const canvasRect = renderer.canvas.getBoundingClientRect();
