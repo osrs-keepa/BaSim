@@ -60,7 +60,7 @@ export class DefenderPlayer {
                 this.shortestDistances[index] = newDistance;
             }
             index = currentPosition.x + 1 + currentPosition.y * barbarianAssault.map.width;
-            if (currentPosition.x < barbarianAssault.map.width - 1 && this.waypoints[index] === 0 && (barbarianAssault.map.map[index] & 19136898) === 0) {
+            if (currentPosition.x < barbarianAssault.map.width - 1 && this.waypoints[index] === 0 && (barbarianAssault.map.map[index] & 19136896) === 0) {
                 this.pathQueuePositions[pathQueueEnd] = new Position(currentPosition.x + 1, currentPosition.y);
                 pathQueueEnd++;
                 this.waypoints[index] = 8;
@@ -159,12 +159,6 @@ export class DefenderPlayer {
             else if ((waypoint & 4) !== 0) {
                 currentPosition.y--;
             }
-        }
-    }
-    draw(renderer) {
-        if (this.position.x >= 0) {
-            renderer.setDrawColor(240, 240, 240, 200);
-            renderer.fill(this.position.x, this.position.y);
         }
     }
     dropFood(barbarianAssault, foodType) {
