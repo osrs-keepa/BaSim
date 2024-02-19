@@ -73,11 +73,15 @@ export class BarbarianAssaultMap {
         return (this.getFlag(new Position(position.x, position.y - 1)) & (MOVE_NORTH_MASK | MOVE_FULL_MASK)) === 0;
     }
 
-    public hasLineOfSight(position1: Position, position2: Position): boolean {
+    public hasLineOfSight(position1: Position, position2: Position, range: number): boolean {
         const dx: number = position2.x - position1.x;
         const dxAbs: number = Math.abs(dx);
         const dy: number = position2.y - position1.y;
         const dyAbs:number = Math.abs(dy);
+
+        if (Math.max(dxAbs, dyAbs) > range) {
+            return false;
+        }
 
         if (dxAbs > dyAbs) {
             let xTile: number = position1.x;

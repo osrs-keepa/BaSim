@@ -1,7 +1,9 @@
 import { Position } from "./Position.js";
 import { Direction } from "./Direction.js";
-export class RunnerPenance {
+import { Penance } from "./Penance.js";
+export class RunnerPenance extends Penance {
     constructor(position, rng, id, sniffDistance) {
+        super(position);
         this.cycleTick = 1;
         this.targetState = 0;
         this.foodTarget = null;
@@ -10,8 +12,6 @@ export class RunnerPenance {
         this.despawnCountdown = null;
         this.isDying = false;
         this.forcedMovementsIndex = 0;
-        this.position = position;
-        this.destination = position;
         this.rng = rng;
         this.id = id;
         this.sniffDistance = sniffDistance;
@@ -118,7 +118,7 @@ export class RunnerPenance {
                 const foodZone = barbarianAssault.map.getFoodZone(x, y);
                 for (let foodIndex = foodZone.foodList.length - 1; foodIndex >= 0; foodIndex--) {
                     const food = foodZone.foodList[foodIndex];
-                    if (!barbarianAssault.map.hasLineOfSight(new Position(this.position.x, this.position.y), new Position(food.position.x, food.position.y))) {
+                    if (!barbarianAssault.map.hasLineOfSight(new Position(this.position.x, this.position.y), new Position(food.position.x, food.position.y), 999)) {
                         continue;
                     }
                     if (firstFoodFound === null) {

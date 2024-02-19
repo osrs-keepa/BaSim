@@ -209,11 +209,11 @@ function canvasOnMouseDown(mouseEvent) {
         }
     }
     else if (mouseEvent.button === 2) {
-        if (barbarianAssault.collectorPlayerPosition.equals(new Position(xTile, yTile))) {
-            barbarianAssault.collectorPlayerPosition.x = -1;
+        if (barbarianAssault.collectorPlayer.position.equals(new Position(xTile, yTile))) {
+            barbarianAssault.collectorPlayer.position.x = -1;
         }
         else {
-            barbarianAssault.collectorPlayerPosition = new Position(xTile, yTile);
+            barbarianAssault.collectorPlayer.position = new Position(xTile, yTile);
         }
     }
 }
@@ -343,9 +343,9 @@ function drawEntities() {
     for (let i = 0; i < barbarianAssault.runners.length; i++) {
         renderer.fill(barbarianAssault.runners[i].position.x, barbarianAssault.runners[i].position.y);
     }
-    if (barbarianAssault.collectorPlayerPosition.x >= 0) {
+    if (barbarianAssault.collectorPlayer.position.x >= 0) {
         renderer.setDrawColor(240, 240, 10, 200);
-        renderer.fill(barbarianAssault.collectorPlayerPosition.x, barbarianAssault.collectorPlayerPosition.y);
+        renderer.fill(barbarianAssault.collectorPlayer.position.x, barbarianAssault.collectorPlayer.position.y);
     }
     if (barbarianAssault.defenderPlayer.position.x >= 0) {
         renderer.setDrawColor(240, 240, 240, 200);

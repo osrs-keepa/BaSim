@@ -4,6 +4,7 @@ import { BarbarianAssaultMap } from "./BarbarianAssaultMap.js";
 import { RunnerPenance } from "./RunnerPenance.js";
 import { DefenderPlayer } from "./DefenderPlayer.js";
 import { RunnerPenanceRng } from "./RunnerPenanceRng.js";
+import { CollectorPlayer } from "./CollectorPlayer.js";
 export class BarbarianAssault {
     constructor(wave, requireRepairs, requireLogs, infiniteFood, runnerMovements, defenderLevel) {
         this.ticks = 0;
@@ -17,7 +18,7 @@ export class BarbarianAssault {
         this.runnersToRemove = [];
         this.runnersAlive = 0;
         this.runnersKilled = 0;
-        this.collectorPlayerPosition = new Position(-1, -1);
+        this.collectorPlayer = new CollectorPlayer(new Position(-1, -1));
         this.runners = [];
         this.runnerMovementsIndex = 0;
         this.currentRunnerId = 1;
@@ -147,7 +148,7 @@ export class BarbarianAssault {
         if (position.equals(this.defenderPlayer.position)) {
             return true;
         }
-        if (this.collectorPlayerPosition !== null && position.equals(this.collectorPlayerPosition)) {
+        if (position.equals(this.collectorPlayer.position)) {
             return true;
         }
         if (position.y === 22) {
@@ -186,7 +187,7 @@ export class BarbarianAssault {
         }
         barbarianAssault.runnersAlive = this.runnersAlive;
         barbarianAssault.runnersKilled = this.runnersKilled;
-        barbarianAssault.collectorPlayerPosition = this.collectorPlayerPosition === null ? null : this.collectorPlayerPosition.clone();
+        barbarianAssault.collectorPlayer = this.collectorPlayer === null ? null : this.collectorPlayer.clone();
         barbarianAssault.defenderPlayer = this.defenderPlayer === null ? null : this.defenderPlayer.clone();
         barbarianAssault.requireRepairs = this.requireRepairs;
         barbarianAssault.requireLogs = this.requireLogs;

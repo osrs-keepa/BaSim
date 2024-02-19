@@ -55,11 +55,14 @@ export class BarbarianAssaultMap {
     canMoveSouth(position) {
         return (this.getFlag(new Position(position.x, position.y - 1)) & (MOVE_NORTH_MASK | MOVE_FULL_MASK)) === 0;
     }
-    hasLineOfSight(position1, position2) {
+    hasLineOfSight(position1, position2, range) {
         const dx = position2.x - position1.x;
         const dxAbs = Math.abs(dx);
         const dy = position2.y - position1.y;
         const dyAbs = Math.abs(dy);
+        if (Math.max(dxAbs, dyAbs) > range) {
+            return false;
+        }
         if (dxAbs > dyAbs) {
             let xTile = position1.x;
             let y = (position1.y << 16) + 0x8000;

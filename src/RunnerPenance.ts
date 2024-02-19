@@ -4,10 +4,9 @@ import {BarbarianAssault} from "./BarbarianAssault.js";
 import {FoodZone} from "./FoodZone.js";
 import {RunnerPenanceRng} from "./RunnerPenanceRng.js";
 import {Direction} from "./Direction.js";
+import {Penance} from "./Penance.js";
 
-export class RunnerPenance {
-    public position: Position;
-    public destination: Position;
+export class RunnerPenance extends Penance {
     public cycleTick: number = 1;
     public targetState: number = 0;
     public foodTarget: Food = null;
@@ -21,8 +20,7 @@ export class RunnerPenance {
     public sniffDistance: number;
 
     public constructor(position: Position, rng: RunnerPenanceRng, id: number, sniffDistance: number) {
-        this.position = position;
-        this.destination = position;
+        super(position);
         this.rng = rng;
         this.id = id;
         this.sniffDistance = sniffDistance;
@@ -98,7 +96,7 @@ export class RunnerPenance {
         }
     }
 
-    private move(barbarianAssault: BarbarianAssault): void {
+    protected move(barbarianAssault: BarbarianAssault): void {
         const startX: number = this.position.x;
 
         if (this.destination.x > startX) {
@@ -141,7 +139,7 @@ export class RunnerPenance {
                 for (let foodIndex: number = foodZone.foodList.length - 1; foodIndex >= 0; foodIndex--) {
                     const food: Food = foodZone.foodList[foodIndex];
 
-                    if (!barbarianAssault.map.hasLineOfSight(new Position(this.position.x, this.position.y), new Position(food.position.x, food.position.y))) {
+                    if (!barbarianAssault.map.hasLineOfSight(new Position(this.position.x, this.position.y), new Position(food.position.x, food.position.y), 999)) {
                         continue;
                     }
 

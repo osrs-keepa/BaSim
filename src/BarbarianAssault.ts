@@ -4,6 +4,7 @@ import {BarbarianAssaultMap} from "./BarbarianAssaultMap.js";
 import {RunnerPenance} from "./RunnerPenance.js";
 import {DefenderPlayer} from "./DefenderPlayer.js";
 import {RunnerPenanceRng} from "./RunnerPenanceRng.js";
+import {CollectorPlayer} from "./CollectorPlayer.js";
 
 export class BarbarianAssault {
     public map: BarbarianAssaultMap;
@@ -23,7 +24,7 @@ export class BarbarianAssault {
     public runnersToRemove: Array<RunnerPenance> = [];
     public runnersAlive: number = 0;
     public runnersKilled: number = 0;
-    public collectorPlayerPosition: Position = new Position(-1, -1);
+    public collectorPlayer: CollectorPlayer = new CollectorPlayer(new Position(-1, -1));
     public defenderPlayer: DefenderPlayer;
     public requireRepairs: boolean;
     public requireLogs: boolean;
@@ -174,7 +175,7 @@ export class BarbarianAssault {
             return true;
         }
 
-        if (this.collectorPlayerPosition !== null && position.equals(this.collectorPlayerPosition)) {
+        if (position.equals(this.collectorPlayer.position)) {
             return true;
         }
 
@@ -207,7 +208,7 @@ export class BarbarianAssault {
         barbarianAssault.westTrapCharges = this.westTrapCharges;
         barbarianAssault.northwestLogsArePresent = this.northwestLogsArePresent;
         barbarianAssault.southeastLogsArePresent = this.southeastLogsArePresent;
-        barbarianAssault.eastTrapPosition =this.eastTrapPosition === null ? null :  this.eastTrapPosition.clone();
+        barbarianAssault.eastTrapPosition =this.eastTrapPosition === null ? null : this.eastTrapPosition.clone();
         barbarianAssault.westTrapPosition = this.westTrapPosition === null ? null : this.westTrapPosition.clone();
         barbarianAssault.runnersToRemove = [];
         for (let i: number = 0; i < this.runnersToRemove.length; i++) {
@@ -215,7 +216,7 @@ export class BarbarianAssault {
         }
         barbarianAssault.runnersAlive = this.runnersAlive;
         barbarianAssault.runnersKilled = this.runnersKilled;
-        barbarianAssault.collectorPlayerPosition = this.collectorPlayerPosition === null ? null : this.collectorPlayerPosition.clone();
+        barbarianAssault.collectorPlayer = this.collectorPlayer === null ? null : this.collectorPlayer.clone();
         barbarianAssault.defenderPlayer = this.defenderPlayer === null ? null : this.defenderPlayer.clone();
         barbarianAssault.requireRepairs = this.requireRepairs;
         barbarianAssault.requireLogs = this.requireLogs;
