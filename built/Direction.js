@@ -1,3 +1,6 @@
+/**
+ * Enumerates cardinal directions.
+ */
 export var Direction;
 (function (Direction) {
     Direction["NORTH"] = "NORTH";

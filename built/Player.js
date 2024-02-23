@@ -1,5 +1,8 @@
 import { Position } from "./Position.js";
 import { Character } from "./Character.js";
+/**
+ * Represents a Barbarian Assault player character.
+ */
 export class Player extends Character {
     constructor(position) {
         super(position);
@@ -8,6 +11,14 @@ export class Player extends Character {
         this.shortestDistances = [];
         this.waypoints = [];
     }
+    /**
+     * Determines the path this player must take to move to the given destination in the given
+     * BarbarianAssault game, and updates this player's state to move along this path to the given
+     * destination over time.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to find the path to the given destination in
+     * @param destination       the position to find the path to in the given BarbarianAssault game
+     */
     findPath(barbarianAssault, destination) {
         for (let i = 0; i < barbarianAssault.map.width * barbarianAssault.map.height; i++) {
             this.shortestDistances[i] = 99999999;

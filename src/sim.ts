@@ -65,6 +65,9 @@ var savedBarbarianAssault: BarbarianAssault;
 var savedTickCountSpanInnerHTML: string;
 var savedCurrentDefenderFoodSpanInnerHTML: string;
 
+/**
+ * Initializes the simulator.
+ */
 function init(): void {
     canvas = document.getElementById(HTML_CANVAS) as HTMLCanvasElement;
     movementsInput = document.getElementById(HTML_RUNNER_MOVEMENTS) as HTMLInputElement;
@@ -111,6 +114,10 @@ function init(): void {
     markerColor = Number("0x" + markerColorInput.value.substring(1));
 }
 
+/**
+ * Resets the simulator: the simulator is stopped and the underlying {@link BarbarianAssault} game
+ * is replaced with a new game according to the currently selected configuration.
+ */
 function reset(): void {
     if (isRunning) {
         clearInterval(tickTimerId);
@@ -123,6 +130,13 @@ function reset(): void {
     draw();
 }
 
+/**
+ * Parses the simulator's configured runner movements, converting them into a list of per-runner
+ * movement strings (each formatted e.g. as "wses" to indicate West-South-East-South).
+ *
+ * @return  a list of per-runner movements strings if the entire runner movements configuration
+ *          is valid (i.e. contains only valid characters in the expected format), otherwise null
+ */
 function parseMovementsInput(): Array<string> {
     const movements: Array<string> = movementsInput.value.split("-");
 
@@ -141,6 +155,11 @@ function parseMovementsInput(): Array<string> {
     return movements;
 }
 
+/**
+ * Handles the given keyboard event.
+ *
+ * @param keyboardEvent the keyboard event to handle
+ */
 function windowOnKeyDown(keyboardEvent: KeyboardEvent): void {
     const key: string = keyboardEvent.key;
 
@@ -197,6 +216,9 @@ function windowOnKeyDown(keyboardEvent: KeyboardEvent): void {
     }
 }
 
+/**
+ * Pauses and saves the state of the simulator.
+ */
 function save(): void {
     isPaused = true;
 
@@ -205,6 +227,9 @@ function save(): void {
     savedCurrentDefenderFoodSpanInnerHTML = currentDefenderFoodSpan.innerHTML;
 }
 
+/**
+ * Pauses and loads the previously saved state of the simulator.
+ */
 function load(): void {
     isPaused = true;
 
@@ -219,6 +244,11 @@ function load(): void {
     draw();
 }
 
+/**
+ * Handles the given mouse event.
+ *
+ * @param mouseEvent    the mouse event to handle
+ */
 function canvasOnMouseDown(mouseEvent: MouseEvent): void {
     const canvasRect: DOMRect = renderer.canvas.getBoundingClientRect();
     const xTile: number = Math.trunc((mouseEvent.clientX - canvasRect.left) / renderer.tileSize);
@@ -254,6 +284,9 @@ function canvasOnMouseDown(mouseEvent: MouseEvent): void {
     }
 }
 
+/**
+ * Draws and presents the entire display of the simulator.
+ */
 function draw(): void {
     drawMap()
     drawDetails();
@@ -264,6 +297,9 @@ function draw(): void {
     renderer.present();
 }
 
+/**
+ * Draws the map.
+ */
 function drawMap(): void {
     renderer.setDrawColor(206, 183, 117, 255);
     renderer.clear();
@@ -324,6 +360,9 @@ function drawMap(): void {
     }
 }
 
+/**
+ * Draws details of the game (aesthetic details, logs, and traps).
+ */
 function drawDetails(): void {
     renderer.setDrawColor(160, 82, 45, 255);
 
@@ -381,6 +420,9 @@ function drawDetails(): void {
     renderer.fillItem(32, 34);
 }
 
+/**
+ * Draws items (e.g. {@link Food}.
+ */
 function drawItems(): void {
     for (let i: number = 0; i < barbarianAssault.map.foodZones.length; i++) {
         const foodZone: FoodZone = barbarianAssault.map.foodZones[i];
@@ -393,6 +435,9 @@ function drawItems(): void {
     }
 }
 
+/**
+ * Draws entities ({@link Character}s}.
+ */
 function drawEntities(): void {
     renderer.setDrawColor(10, 10, 240, 127);
 
@@ -411,6 +456,9 @@ function drawEntities(): void {
     }
 }
 
+/**
+ * Draws a grid, with each tile of the map being a cell of the grid (i.e. outlines each tile).
+ */
 function drawGrid(): void {
     for (let xTile: number = 0; xTile < barbarianAssault.map.width; xTile++) {
         if (xTile % 8 === 7) {
@@ -433,6 +481,9 @@ function drawGrid(): void {
     }
 }
 
+/**
+ * Draws aesthetic overlays.
+ */
 function drawOverlays(): void {
     renderer.setDrawColor(240, 10, 10, 220);
 
@@ -469,6 +520,10 @@ function drawOverlays(): void {
     renderer.fill(36, 6);
 }
 
+/**
+ * If the simulator is running, then stops and resets the simulator.
+ * Otherwise, starts the simulator.
+ */
 function startStopButtonOnClick(): void {
     if (isRunning) {
         barbarianAssault.map.reset();
@@ -492,6 +547,9 @@ function startStopButtonOnClick(): void {
     }
 }
 
+/**
+ * Progresses the state of the simulator by a single tick.
+ */
 function tick(): void {
     if (!isPaused) {
         barbarianAssault.tick();
@@ -501,32 +559,53 @@ function tick(): void {
     }
 }
 
+/**
+ * Toggles whether tile-marking mode is enabled.
+ */
 function toggleMarkingTilesButtonOnClick(): void {
     markingTiles = !markingTiles;
 }
 
+/**
+ * Sets the wave to the selected wave value, and stops and resets the simulator.
+ */
 function waveSelectOnChange(): void {
     wave = Number(waveSelect.value);
     reset();
 }
 
+/**
+ * Sets the defender level to the selected defender level value, and stops and resets the simulator.
+ */
 function defenderLevelSelectionOnChange(): void {
     defenderLevel = Number(defenderLevelSelection.value);
     reset();
 }
 
+/**
+ * Toggles whether traps need to be repaired.
+ */
 function toggleRepairOnChange(): void {
     requireRepairs = toggleRepair.value === "yes";
 }
 
+/**
+ * Toggles whether the simulator must be paused before saving / loading.
+ */
 function togglePauseSaveLoadOnChange(): void {
     pauseSaveLoad = togglePauseSaveLoad.value === "yes";
 }
 
+/**
+ * Toggles whether the defender has infinite food.
+ */
 function toggleInfiniteFoodOnChange(): void {
     infiniteFood = toggleInfiniteFood.value === "yes";
 }
 
+/**
+ * Toggles whether a log is required to repair a trap.
+ */
 function toggleLogToRepairOnChange(): void {
     requireLogs = toggleLogToRepair.value === "yes";
 }

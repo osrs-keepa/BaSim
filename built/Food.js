@@ -1,3 +1,6 @@
+/**
+ * Represents food.
+ */
 export class Food {
     constructor(position, type, isGood) {
         this.colorBlue = 0;
@@ -7,6 +10,11 @@ export class Food {
         this.colorRed = isGood ? 0 : 255;
         this.colorGreen = isGood ? 255 : 0;
     }
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     clone() {
         let food = new Food(this.position, this.type, this.isGood);
         food.position = this.position === null ? null : this.position.clone();

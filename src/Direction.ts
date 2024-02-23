@@ -1,3 +1,6 @@
+/**
+ * Enumerates cardinal directions.
+ */
 export enum Direction {
     NORTH = "NORTH",
     SOUTH = "SOUTH",

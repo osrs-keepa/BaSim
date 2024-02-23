@@ -6,6 +6,10 @@ import {DefenderPlayer} from "./DefenderPlayer.js";
 import {RunnerPenanceRng} from "./RunnerPenanceRng.js";
 import {CollectorPlayer} from "./CollectorPlayer.js";
 
+/**
+ * Represents a game of Barbarian Assault: holds state information and exposes functions for
+ * progressing the game state.
+ */
 export class BarbarianAssault {
     public map: BarbarianAssaultMap;
     public ticks: number = 0;
@@ -96,6 +100,9 @@ export class BarbarianAssault {
         this.map = new BarbarianAssaultMap(wave);
     }
 
+    /**
+     * Progresses the game state by a single tick.
+     */
     public tick(): void {
         this.ticks++;
         console.log(this.ticks);
@@ -141,6 +148,12 @@ export class BarbarianAssault {
         this.defenderPlayer.tick(this);
     }
 
+    /**
+     * Changes the defender food call to be one of the foods that it is currently not,
+     * each with equal probability
+     *
+     * @private
+     */
     private changeDefenderFoodCall(): void {
         switch (this.defenderFoodCall) {
             case FoodType.TOFU:
@@ -170,6 +183,14 @@ export class BarbarianAssault {
         }
     }
 
+    /**
+     * Determines if the tile with the given position blocks {@link Penance} movement
+     * (i.e. Penance can not move onto the tile).
+     *
+     * @param position  the position of the tile to determine if Penance are blocked by
+     * @return          true if the tile with the given position blocks Penance movement,
+     *                  otherwise false
+     */
     public tileBlocksPenance(position: Position): boolean {
         if (position.equals(this.defenderPlayer.position)) {
             return true;
@@ -196,6 +217,11 @@ export class BarbarianAssault {
         return false;
     }
 
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     public clone(): BarbarianAssault {
         let barbarianAssault: BarbarianAssault = new BarbarianAssault(this.wave, this.requireRepairs, this.requireLogs, this.infiniteFood, this.runnerMovements, this.defenderLevel);
         barbarianAssault.map = this.map === null ? null : this.map.clone();

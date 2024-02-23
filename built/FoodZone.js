@@ -1,7 +1,15 @@
+/**
+ * Represents a section of a {@link BarbarianAssaultMap} that contains zero or more {@link Food}.
+ */
 export class FoodZone {
     constructor(foodList) {
         this.foodList = foodList;
     }
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     clone() {
         let foodZone = new FoodZone(this.foodList);
         foodZone.foodList = [];

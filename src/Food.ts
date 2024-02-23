@@ -1,6 +1,9 @@
 import {Position} from "./Position.js";
 import {FoodType} from "./FoodType.js";
 
+/**
+ * Represents food.
+ */
 export class Food {
     public position: Position;
     public type: FoodType;
@@ -18,6 +21,11 @@ export class Food {
         this.colorGreen = isGood ? 255 : 0;
     }
 
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     public clone(): Food {
         let food: Food = new Food(this.position, this.type, this.isGood);
         food.position = this.position === null ? null : this.position.clone();

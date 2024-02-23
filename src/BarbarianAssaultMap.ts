@@ -15,6 +15,10 @@ export const MOVE_WEST_MASK: number = 0x80;
 export const MOVE_NORTH_MASK: number = 0x2;
 export const MOVE_SOUTH_MASK: number = 0x20;
 
+/**
+ * Represents the map for a game of Barbarian Assault: includes details of each tile, locations
+ * of food, and functions for determining how {@link Character}s can interact with the map.
+ */
 export class BarbarianAssaultMap {
     public map: Array<number>;
     public width: number = 64;
@@ -33,6 +37,9 @@ export class BarbarianAssaultMap {
         this.reset();
     }
 
+    /**
+     * Resets the state of the map to have no food.
+     */
     public reset(): void {
         this.foodZones = [];
         this.foodZonesWidth = 1 + ((this.width - 1) >> 3);
@@ -45,34 +52,99 @@ export class BarbarianAssaultMap {
         }
     }
 
+    /**
+     * Gets the FoodZone at the given zone coordinates.
+     *
+     * @param xZone the x zone coordinate of the FoodZone to get
+     * @param yZone the y zone coordinate of the FoodZone to get
+     * @return      the FoodZone at the given zone coordinates
+     */
     public getFoodZone(xZone: number, yZone: number): FoodZone {
         return this.foodZones[xZone + this.foodZonesWidth * yZone]
     }
 
+    /**
+     * Adds the given Food to the {@link FoodZone} at the given Food's position.
+     *
+     * @param food  the Food to add
+     */
     public addFood(food: Food): void {
         this.getFoodZone(food.position.x >>> 3, food.position.y >>> 3).foodList.push(food);
     }
 
+    /**
+     * Gets the flag (encoded details) of the tile at the given position.
+     *
+     * @param position  the position of the tile to get the flag of
+     * @return          the flag (encoded details) of the tile at the given position
+     */
     public getFlag(position: Position): number {
         return this.map[position.x + position.y * this.width];
     }
 
+    /**
+     * Determines if a {@link Character} at the given position can move one tile east (i.e. if the
+     * tile one east of the Character can be entered from the west).
+     *
+     * @param position  the position of the tile to determine if a Character can move one
+     *                  tile east from
+     * @return          true if a Character at the given position can move one tile east,
+     *                  otherwise false
+     */
     public canMoveEast(position: Position): boolean{
         return (this.getFlag(new Position(position.x + 1, position.y)) & (MOVE_WEST_MASK | MOVE_FULL_MASK)) === 0;
     }
 
+    /**
+     * Determines if a {@link Character} at the given position can move one tile west (i.e. if the
+     * tile one west of the Character can be entered from the east).
+     *
+     * @param position  the position of the tile to determine if a Character can move one
+     *                  tile west from
+     * @return          true if a Character at the given position can move one tile west,
+     *                  otherwise false
+     */
     public canMoveWest(position: Position): boolean{
         return (this.getFlag(new Position(position.x - 1, position.y)) & (MOVE_EAST_MASK | MOVE_FULL_MASK)) === 0;
     }
 
+    /**
+     * Determines if a {@link Character} at the given position can move one tile north (i.e. if the
+     * tile one north of the Character can be entered from the south).
+     *
+     * @param position  the position of the tile to determine if a Character can move one
+     *                  tile north from
+     * @return          true if a Character at the given position can move one tile north,
+     *                  otherwise false
+     */
     public canMoveNorth(position: Position): boolean{
         return (this.getFlag(new Position(position.x, position.y + 1)) & (MOVE_SOUTH_MASK | MOVE_FULL_MASK)) === 0;
     }
 
+    /**
+     * Determines if a {@link Character} at the given position can move one tile south (i.e. if the
+     * tile one south of the Character can be entered from the north).
+     *
+     * @param position  the position of the tile to determine if a Character can move one
+     *                  tile south from
+     * @return          true if a Character at the given position can move one tile south,
+     *                  otherwise false
+     */
     public canMoveSouth(position: Position): boolean{
         return (this.getFlag(new Position(position.x, position.y - 1)) & (MOVE_NORTH_MASK | MOVE_FULL_MASK)) === 0;
     }
 
+    /**
+     * Determines if a {@link Character} at the given position1 can see an entity at the given position2.
+     *
+     * @param position1 the position to check if a Character can see an entity at the given
+     *                  position2 from
+     * @param position2 the position to check if a Character at the given position1 can see an
+     *                  entity at
+     * @param range     the maximum (L-infinity) distance to consider an entity visible from
+     * @return          true if a Character at the given position1 can see an entity at the
+     *                  given position2, otherwise false
+     */
     public hasLineOfSight(position1: Position, position2: Position, range: number): boolean {
         const dx: number = position2.x - position1.x;
         const dxAbs: number = Math.abs(dx);
@@ -166,6 +238,11 @@ export class BarbarianAssaultMap {
         return true;
     }
 
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     public clone(): BarbarianAssaultMap {
         let barbarianAssaultMap: BarbarianAssaultMap = new BarbarianAssaultMap(10);
         barbarianAssaultMap.map = [...this.map];

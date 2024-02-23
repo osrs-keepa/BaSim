@@ -51,6 +51,9 @@ var toggleMarkingTilesButton;
 var savedBarbarianAssault;
 var savedTickCountSpanInnerHTML;
 var savedCurrentDefenderFoodSpanInnerHTML;
+/**
+ * Initializes the simulator.
+ */
 function init() {
     canvas = document.getElementById(HTML_CANVAS);
     movementsInput = document.getElementById(HTML_RUNNER_MOVEMENTS);
@@ -95,6 +98,10 @@ function init() {
     defenderLevel = Number(defenderLevelSelection.value);
     markerColor = Number("0x" + markerColorInput.value.substring(1));
 }
+/**
+ * Resets the simulator: the simulator is stopped and the underlying {@link BarbarianAssault} game
+ * is replaced with a new game according to the currently selected configuration.
+ */
 function reset() {
     if (isRunning) {
         clearInterval(tickTimerId);
@@ -104,6 +111,13 @@ function reset() {
     barbarianAssault = new BarbarianAssault(wave, requireRepairs, requireLogs, infiniteFood, [], defenderLevel);
     draw();
 }
+/**
+ * Parses the simulator's configured runner movements, converting them into a list of per-runner
+ * movement strings (each formatted e.g. as "wses" to indicate West-South-East-South).
+ *
+ * @return  a list of per-runner movements strings if the entire runner movements configuration
+ *          is valid (i.e. contains only valid characters in the expected format), otherwise null
+ */
 function parseMovementsInput() {
     const movements = movementsInput.value.split("-");
     for (let i = 0; i < movements.length; i++) {
@@ -117,6 +131,11 @@ function parseMovementsInput() {
     }
     return movements;
 }
+/**
+ * Handles the given keyboard event.
+ *
+ * @param keyboardEvent the keyboard event to handle
+ */
 function windowOnKeyDown(keyboardEvent) {
     const key = keyboardEvent.key;
     if (isRunning) {
@@ -168,12 +187,18 @@ function windowOnKeyDown(keyboardEvent) {
         keyboardEvent.preventDefault();
     }
 }
+/**
+ * Pauses and saves the state of the simulator.
+ */
 function save() {
     isPaused = true;
     savedBarbarianAssault = barbarianAssault.clone();
     savedTickCountSpanInnerHTML = tickCountSpan.innerHTML;
     savedCurrentDefenderFoodSpanInnerHTML = currentDefenderFoodSpan.innerHTML;
 }
+/**
+ * Pauses and loads the previously saved state of the simulator.
+ */
 function load() {
     isPaused = true;
     tickCountSpan.innerHTML = savedTickCountSpanInnerHTML;
@@ -184,6 +209,11 @@ function load() {
     save();
     draw();
 }
+/**
+ * Handles the given mouse event.
+ *
+ * @param mouseEvent    the mouse event to handle
+ */
 function canvasOnMouseDown(mouseEvent) {
     const canvasRect = renderer.canvas.getBoundingClientRect();
     const xTile = Math.trunc((mouseEvent.clientX - canvasRect.left) / renderer.tileSize);
@@ -217,6 +247,9 @@ function canvasOnMouseDown(mouseEvent) {
         }
     }
 }
+/**
+ * Draws and presents the entire display of the simulator.
+ */
 function draw() {
     drawMap();
     drawDetails();
@@ -226,6 +259,9 @@ function draw() {
     drawOverlays();
     renderer.present();
 }
+/**
+ * Draws the map.
+ */
 function drawMap() {
     renderer.setDrawColor(206, 183, 117, 255);
     renderer.clear();
@@ -282,6 +318,9 @@ function drawMap() {
         renderer.outline(markedTile[0], markedTile[1]);
     }
 }
+/**
+ * Draws details of the game (aesthetic details, logs, and traps).
+ */
 function drawDetails() {
     renderer.setDrawColor(160, 82, 45, 255);
     renderer.cone(40, 32);
@@ -328,6 +367,9 @@ function drawDetails() {
     renderer.setDrawColor(127, 127, 127, 255);
     renderer.fillItem(32, 34);
 }
+/**
+ * Draws items (e.g. {@link Food}.
+ */
 function drawItems() {
     for (let i = 0; i < barbarianAssault.map.foodZones.length; i++) {
         const foodZone = barbarianAssault.map.foodZones[i];
@@ -338,6 +380,9 @@ function drawItems() {
         }
     }
 }
+/**
+ * Draws entities ({@link Character}s}.
+ */
 function drawEntities() {
     renderer.setDrawColor(10, 10, 240, 127);
     for (let i = 0; i < barbarianAssault.runners.length; i++) {
@@ -352,6 +397,9 @@ function drawEntities() {
         renderer.fill(barbarianAssault.defenderPlayer.position.x, barbarianAssault.defenderPlayer.position.y);
     }
 }
+/**
+ * Draws a grid, with each tile of the map being a cell of the grid (i.e. outlines each tile).
+ */
 function drawGrid() {
     for (let xTile = 0; xTile < barbarianAssault.map.width; xTile++) {
         if (xTile % 8 === 7) {
@@ -372,6 +420,9 @@ function drawGrid() {
         renderer.northLineBig(0, yTile, barbarianAssault.map.width);
     }
 }
+/**
+ * Draws aesthetic overlays.
+ */
 function drawOverlays() {
     renderer.setDrawColor(240, 10, 10, 220);
     if (wave === 10) {
@@ -402,6 +453,10 @@ function drawOverlays() {
     ;
     renderer.fill(36, 6);
 }
+/**
+ * If the simulator is running, then stops and resets the simulator.
+ * Otherwise, starts the simulator.
+ */
 function startStopButtonOnClick() {
     if (isRunning) {
         barbarianAssault.map.reset();
@@ -422,6 +477,9 @@ function startStopButtonOnClick() {
         tickTimerId = setInterval(tick, Number(tickDurationInput.value));
     }
 }
+/**
+ * Progresses the state of the simulator by a single tick.
+ */
 function tick() {
     if (!isPaused) {
         barbarianAssault.tick();
@@ -430,26 +488,47 @@ function tick() {
         draw();
     }
 }
+/**
+ * Toggles whether tile-marking mode is enabled.
+ */
 function toggleMarkingTilesButtonOnClick() {
     markingTiles = !markingTiles;
 }
+/**
+ * Sets the wave to the selected wave value, and stops and resets the simulator.
+ */
 function waveSelectOnChange() {
     wave = Number(waveSelect.value);
     reset();
 }
+/**
+ * Sets the defender level to the selected defender level value, and stops and resets the simulator.
+ */
 function defenderLevelSelectionOnChange() {
     defenderLevel = Number(defenderLevelSelection.value);
     reset();
 }
+/**
+ * Toggles whether traps need to be repaired.
+ */
 function toggleRepairOnChange() {
     requireRepairs = toggleRepair.value === "yes";
 }
+/**
+ * Toggles whether the simulator must be paused before saving / loading.
+ */
 function togglePauseSaveLoadOnChange() {
     pauseSaveLoad = togglePauseSaveLoad.value === "yes";
 }
+/**
+ * Toggles whether the defender has infinite food.
+ */
 function toggleInfiniteFoodOnChange() {
     infiniteFood = toggleInfiniteFood.value === "yes";
 }
+/**
+ * Toggles whether a log is required to repair a trap.
+ */
 function toggleLogToRepairOnChange() {
     requireLogs = toggleLogToRepair.value === "yes";
 }

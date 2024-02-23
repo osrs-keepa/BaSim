@@ -26,6 +26,9 @@ export class RunnerPenance extends Penance {
         this.sniffDistance = sniffDistance;
     }
 
+    /**
+     * @inheritDoc
+     */
     public tick(barbarianAssault: BarbarianAssault): void {
         this.cycleTick++;
 
@@ -96,7 +99,12 @@ export class RunnerPenance extends Penance {
         }
     }
 
-    protected move(barbarianAssault: BarbarianAssault): void {
+    /**
+     * This runner penance takes up to one step (if possible) in its path to its destination.
+     *
+     * @private
+     */
+    private move(barbarianAssault: BarbarianAssault): void {
         const startX: number = this.position.x;
 
         if (this.destination.x > startX) {
@@ -124,6 +132,13 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * This runner penance targets a {@link Food} if any valid targets exist.
+     *
+     * @param barbarianAssault  the BarbarianAssault game for this runner penance to attempt
+     *                          to target a Food in
+     * @private
+     */
     private tryTargetFood(barbarianAssault: BarbarianAssault): void {
         const xZone: number = this.position.x >> 3;
         const yZone: number = this.position.y >> 3;
@@ -159,6 +174,16 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * This runner penance eats its target {@link Food} if it has the same position as that Food.
+     * If the Food is good and this runner penance is in death range of a trap with at least one
+     * charge, then this runner penance starts dying. If the Food is bad, then this runner penance
+     * blughhhhs.
+     *
+     * @param barbarianAssault  the BarbarianAssault game for this runner penance to attempt to
+     *                          eat its target Food in
+     * @private
+     */
     private tryEatAndCheckTarget(barbarianAssault: BarbarianAssault): boolean {
         if (this.foodTarget !== null) {
             const foodZone: FoodZone = barbarianAssault.map.getFoodZone(this.foodTarget.position.x >>> 3, this.foodTarget.position.y >>> 3);
@@ -207,11 +232,23 @@ export class RunnerPenance extends Penance {
         return false;
     }
 
+    /**
+     * Cancels this runner penance's destination (its destination becomes its current position).
+     *
+     * @private
+     */
     private cancelDestination(): void {
         this.destination.x = this.position.x;
         this.destination.y = this.position.y;
     }
 
+    /**
+     * Sets this runner penance's destination as if it just blughhhhd.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's blughhhh destination
+     * @private
+     */
     private setDestinationBlughhhh(barbarianAssault: BarbarianAssault): void {
         this.destination.x = this.position.x;
 
@@ -222,6 +259,13 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * Sets this runner penance's destination as if it is starting a random walk.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's random walk destination
+     * @private
+     */
     private setDestinationRandomWalk(barbarianAssault: BarbarianAssault): void {
         if (this.position.x <= 27) {
             if (this.position.y === 8 || this.position.y === 9) {
@@ -263,10 +307,25 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * Determines if this runner penance is in death range of a trap at the given position.
+     *
+     * @param position  the position to check if this runner penance is in death range of a trap at
+     * @return          true if this runner penance is in death range of a trap at the given
+     *                  position, otherwise false
+     * @private
+     */
     private isInDeathRange(position: Position): boolean {
         return Math.abs(this.position.x - position.x) <= 1 && Math.abs(this.position.y - position.y) <= 1;
     }
 
+    /**
+     * This runner penance performs the actions for tick 1 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick1(barbarianAssault: BarbarianAssault): void {
         if (this.position.y === 6) {
             this.despawnCountdown = 3;
@@ -295,6 +354,13 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * This runner penance performs the actions for ticks 2 and 5 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick2Or5(barbarianAssault: BarbarianAssault): void {
         if (this.targetState === 2) {
             this.tryTargetFood(barbarianAssault);
@@ -303,6 +369,13 @@ export class RunnerPenance extends Penance {
         this.doTick7Through10(barbarianAssault);
     }
 
+    /**
+     * This runner penance performs the actions for tick 3 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick3(barbarianAssault: BarbarianAssault): void {
         if (this.targetState === 3) {
             this.tryTargetFood(barbarianAssault);
@@ -311,6 +384,13 @@ export class RunnerPenance extends Penance {
         this.doTick7Through10(barbarianAssault);
     }
 
+    /**
+     * This runner penance performs the actions for tick 4 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick4(barbarianAssault: BarbarianAssault): void {
         if (this.targetState === 1) {
             this.tryTargetFood(barbarianAssault);
@@ -319,6 +399,13 @@ export class RunnerPenance extends Penance {
         this.doTick7Through10(barbarianAssault);
     }
 
+    /**
+     * This runner penance performs the actions for tick 6 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick6(barbarianAssault: BarbarianAssault): void {
         if (this.position.y === 6) {
             this.despawnCountdown = 3;
@@ -345,16 +432,36 @@ export class RunnerPenance extends Penance {
         }
     }
 
+    /**
+     * This runner penance performs the actions for ticks 7 through 10 of its 10-tick cycle.
+     *
+     * @param barbarianAssault  the BarbarianAssault game to use as reference in determining
+     *                          this runner penance's actions
+     * @private
+     */
     private doTick7Through10(barbarianAssault: BarbarianAssault): void {
         if (!this.tryEatAndCheckTarget(barbarianAssault)) {
             this.move(barbarianAssault);
         }
     }
 
+    /**
+     * Prints the given message along with the current tick count of the given BarbarianAssault
+     * game and the ID of this runner penance.
+     *
+     * @param message           the message to print
+     * @param barbarianAssault  the BarbarianAssault game to print the tick count of
+     * @private
+     */
     private print(message: string, barbarianAssault: BarbarianAssault): void {
         console.log(barbarianAssault.ticks + ": Runner " + this.id + ": " + message);
     }
 
+    /**
+     * Creates a deep clone of this object.
+     *
+     * @return  a deep clone of this object
+     */
     public clone(): RunnerPenance {
         let runnerPenance: RunnerPenance = new RunnerPenance(this.position, this.rng, this.id, this.sniffDistance);
         runnerPenance.position = this.position === null ? null : this.position.clone();
