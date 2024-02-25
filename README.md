@@ -4,6 +4,9 @@ Old School RuneScape Barbarian Assault simulator.
 
 ## Development guide
 
+**Only create and make changes to TypeScript files in the `BaSim/src/` and `BaSim/test/` directories, and `BaSim/index.html`** - the JavaScript files
+in the `BaSim/built/` directory are automatically generated when the project is built.
+
 Install `typescript`, `tsc`, `node`, `npm`, and `vitest`. It is recommended to install the latest version of each of these.
 
 Navigate to the root directory (`BaSim/`) of the project directory in the terminal.
@@ -16,9 +19,9 @@ Run tests against TypeScript files by running `npm run test-ts` in the terminal.
 
 Run tests against TypeScript files and generate a coverage report by running `npm run coverage-ts` in the terminal.
 
-Run tests against JavaScript files by running `npm run test-ts` in the terminal.
+Run built tests against built JavaScript files by running `npm run test-js` in the terminal.
 
-Run tests against JavaScript files and generate a coverage report by running `npm run coverage-ts` in the terminal.
+Run built tests against built JavaScript files and generate a coverage report by running `npm run coverage-js` in the terminal.
 
 Run tests against all files by running `npm run test` in the terminal.
 
