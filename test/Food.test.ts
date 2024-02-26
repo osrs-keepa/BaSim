@@ -1,3 +1,4 @@
+// @ts-ignore
 import {describe, expect, test} from "vitest";
 import {Position} from "../src/Position.js";
 import {FoodType} from "../src/FoodType.js";
