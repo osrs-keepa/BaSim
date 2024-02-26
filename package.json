@@ -1,16 +1,13 @@
 {
   "devDependencies": {
     "@vitest/coverage-v8": "^1.3.1",
+    "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
     "vitest": "^1.3.1"
   },
   "scripts": {
     "build": "tsc",
-    "clean": "tsc --build --clean && rm -rf node_modules && rm -rf coverage && rm package-lock.json",
-    "test-ts": "vitest run test.ts",
-    "coverage-ts": "vitest run test.ts --coverage",
-    "test-js": "vitest run test.js",
-    "coverage-js": "vitest run test.js --coverage",
+    "clean": "rimraf built node_modules coverage package-lock.json",
     "test": "vitest run test",
     "coverage": "vitest run test --coverage"
   }

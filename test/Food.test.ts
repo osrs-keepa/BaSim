@@ -1,5 +1,4 @@
-// @ts-ignore
-import {describe, expect, MockInstance, test, vi} from "vitest";
+import {describe, expect, test} from "vitest";
 import {Position} from "../src/Position.js";
 import {FoodType} from "../src/FoodType.js";
 import {Food} from "../src/Food.js";
