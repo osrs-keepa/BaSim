@@ -1,4 +1,3 @@
-// @ts-ignore
 import {describe, expect, test} from "vitest";
 import {Position} from "../src/Position.js";
 import {FoodType} from "../src/FoodType.js";
@@ -40,11 +39,7 @@ describe("clone", (): void => {
         const foodClone: Food = food.clone();
 
         expect(foodClone).not.toBe(food);
-        expect(foodClone.position).not.toBe(food.position);
-        expect(foodClone.position.x).toBe(food.position.x);
-        expect(foodClone.position.y).toBe(food.position.y);
-        expect(foodClone.type).toBe(food.type);
-        expect(foodClone.isGood).toBe(food.isGood);
+        expect(JSON.stringify(foodClone)).toBe(JSON.stringify(food));
     });
 
     test("clone is a deep copy with null position", (): void => {
@@ -56,8 +51,6 @@ describe("clone", (): void => {
         const foodClone: Food = food.clone();
 
         expect(foodClone).not.toBe(food);
-        expect(foodClone.position).toBe(null);
-        expect(foodClone.type).toBe(food.type);
-        expect(foodClone.isGood).toBe(food.isGood);
+        expect(JSON.stringify(foodClone)).toBe(JSON.stringify(food));
     });
 });

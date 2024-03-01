@@ -1,4 +1,3 @@
-// @ts-ignore
 import {describe, expect, MockInstance, test, vi} from "vitest";
 import {RunnerPenanceRng} from "../src/RunnerPenanceRng.js";
 import {Direction} from "../src/Direction.js";

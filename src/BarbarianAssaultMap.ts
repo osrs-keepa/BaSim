@@ -135,7 +135,8 @@ export class BarbarianAssaultMap {
     }
 
     /**
-     * Determines if a {@link Character} at the given position1 can see an entity at the given position2.
+     * Determines if a {@link Character} at the given position1 can see an entity at the given position2,
+     * if the given range is its maximum vision distance.
      *
      * @param position1 the position to check if a Character can see an entity at the given
      *                  position2 from
@@ -143,12 +144,13 @@ export class BarbarianAssaultMap {
      *                  entity at
      * @param range     the maximum (L-infinity) distance to consider an entity visible from
      * @return          true if a Character at the given position1 can see an entity at the
-     *                  given position2, otherwise false
+     *                  given position2 if the given range is its maximum vision distance,
+     *                  otherwise false
      */
     public hasLineOfSight(position1: Position, position2: Position, range: number): boolean {
-        const dx: number = position2.x - position1.x;
+        const dx: number = position1.x - position2.x;
         const dxAbs: number = Math.abs(dx);
-        const dy: number = position2.y - position1.y;
+        const dy: number = position1.y - position2.y;
         const dyAbs:number = Math.abs(dy);
 
         if (Math.max(dxAbs, dyAbs) > range) {
@@ -156,8 +158,8 @@ export class BarbarianAssaultMap {
         }
 
         if (dxAbs > dyAbs) {
-            let xTile: number = position1.x;
-            let y: number = (position1.y << 16) + 0x8000;
+            let xTile: number = position2.x;
+            let y: number = (position2.y << 16) + 0x8000;
             const slope: number = Math.trunc((dy << 16) / dxAbs);
 
             let xInc: number;
@@ -179,7 +181,7 @@ export class BarbarianAssaultMap {
                 yMask = LOS_SOUTH_MASK | LOS_FULL_MASK;
             }
 
-            while (xTile !== position2.x) {
+            while (xTile !== position1.x) {
                 xTile += xInc;
                 const yTile: number = y >>> 16;
 
@@ -195,8 +197,8 @@ export class BarbarianAssaultMap {
                 }
             }
         } else {
-            let yTile: number = position1.y;
-            let x: number = (position1.x << 16) + 0x8000;
+            let yTile: number = position2.y;
+            let x: number = (position2.x << 16) + 0x8000;
             const slope: number = Math.trunc((dx << 16) / dyAbs);
 
             let yInc: number;
@@ -218,7 +220,7 @@ export class BarbarianAssaultMap {
                 xMask = LOS_WEST_MASK | LOS_FULL_MASK;
             }
 
-            while (yTile !== position2.y) {
+            while (yTile !== position1.y) {
                 yTile += yInc;
                 const xTile: number = x >>> 16;
 
