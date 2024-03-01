@@ -15,17 +15,9 @@ Install dependencies by running `npm install` in the terminal.
 
 Build by running `npm run build` in the terminal.
 
-Run tests against TypeScript files by running `npm run test-ts` in the terminal.
+Run tests by running `npm run test` in the terminal.
 
-Run tests against TypeScript files and generate a coverage report by running `npm run coverage-ts` in the terminal.
-
-Run built tests against built JavaScript files by running `npm run test-js` in the terminal.
-
-Run built tests against built JavaScript files and generate a coverage report by running `npm run coverage-js` in the terminal.
-
-Run tests against all files by running `npm run test` in the terminal.
-
-Run tests against all files and generate a coverage report by running `npm run coverage` in the terminal.
+Run tests and generate a coverage report by running `npm run coverage` in the terminal.
 
 Delete all transpiled JavaScript, delete the coverage report, and uninstall dependencies by running `npm run clean` in the terminal.
 
