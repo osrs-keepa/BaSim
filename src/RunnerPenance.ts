@@ -454,7 +454,7 @@ export class RunnerPenance extends Penance {
      * @private
      */
     private print(message: string, barbarianAssault: BarbarianAssault): void {
-        console.log(barbarianAssault.ticks + ": Runner " + this.id + ": " + message);
+        // console.log(barbarianAssault.ticks + ": Runner " + this.id + ": " + message);
     }
 
     /**

@@ -28,6 +28,8 @@ const HTML_TOGGLE_INFINITE_FOOD: string = "toggleinfinitefood";
 const HTML_TOGGLE_LOG_TO_REPAIR: string = "toggleloghammertorepair";
 const HTML_MARKER_COLOR: string = "marker";
 const HTML_MARKING_TILES: string = "markingtiles";
+const HTML_DEBUG_INFO: string = "debug-info";
+
 
 window.onload = init;
 
@@ -55,11 +57,12 @@ var saveExists: boolean;
 var renderer: Renderer;
 var requireLogs: boolean;
 var requireRepairs: boolean;
-var tickTimerId: number;
+var tickTimerId;
 var wave: number;
 var defenderLevel: number;
 var markerColor: number;
 var toggleMarkingTilesButton: HTMLElement;
+var debugInfo: HTMLElement;
 
 var savedBarbarianAssault: BarbarianAssault;
 var savedTickCountSpanInnerHTML: string;
@@ -92,6 +95,7 @@ function init(): void {
     toggleLogToRepair = document.getElementById(HTML_TOGGLE_LOG_TO_REPAIR) as HTMLInputElement;
     toggleLogToRepair.onchange = toggleLogToRepairOnChange;
     tickCountSpan = document.getElementById(HTML_TICK_COUNT);
+    debugInfo = document.getElementById(HTML_DEBUG_INFO);
     currentDefenderFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
     markerColorInput = document.getElementById(HTML_MARKER_COLOR) as HTMLInputElement;
     renderer = new Renderer(canvas, 64 * 12, 48 * 12, 12);
@@ -101,6 +105,7 @@ function init(): void {
     markedTiles = [];
     reset();
     window.onkeydown = windowOnKeyDown;
+    canvas.onmousemove = canvasOnMouseMove;
     canvas.onmousedown = canvasOnMouseDown;
     canvas.oncontextmenu = function (mouseEvent: MouseEvent): void {
         mouseEvent.preventDefault();
@@ -242,6 +247,14 @@ function load(): void {
     save();
 
     draw();
+}
+
+function canvasOnMouseMove(mouseEvent: MouseEvent): void {
+    const canvasRect: DOMRect = renderer.canvas.getBoundingClientRect();
+    const xTile: number = Math.trunc((mouseEvent.clientX - canvasRect.left) / renderer.tileSize);
+    const yTile: number = Math.trunc((canvasRect.bottom - 1 - mouseEvent.clientY) / renderer.tileSize);
+
+    debugInfo.innerHTML = `${xTile}, ${yTile}`;
 }
 
 /**
@@ -555,6 +568,8 @@ function tick(): void {
         barbarianAssault.tick();
         currentDefenderFoodSpan.innerHTML = barbarianAssault.defenderFoodCall.toString();
         tickCountSpan.innerHTML = barbarianAssault.ticks.toString();
+        // console.log(barbarianAssault.defenderPlayer.pathQueuePositions);
+        // debugInfo.innerHTML = barbarianAssault.defenderPlayer.pathQueuePositions.join('\n').toString();
         draw();
     }
 }

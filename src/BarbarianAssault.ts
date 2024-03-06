@@ -105,8 +105,9 @@ export class BarbarianAssault {
      */
     public tick(): void {
         this.ticks++;
-        console.log(this.ticks);
-        this.runnersToRemove.length = 0;
+        // console.log('tick:', this.ticks);
+        // console.log('runners', this.runners.length);
+        this.runnersToRemove = [];
 
         for (let i: number = 0; i < this.runners.length; i++) {
             this.runners[i].tick(this);

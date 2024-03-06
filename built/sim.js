@@ -18,6 +18,7 @@ const HTML_TOGGLE_INFINITE_FOOD = "toggleinfinitefood";
 const HTML_TOGGLE_LOG_TO_REPAIR = "toggleloghammertorepair";
 const HTML_MARKER_COLOR = "marker";
 const HTML_MARKING_TILES = "markingtiles";
+const HTML_DEBUG_INFO = "debug-info";
 window.onload = init;
 var markingTiles;
 var markedTiles;
@@ -48,6 +49,7 @@ var wave;
 var defenderLevel;
 var markerColor;
 var toggleMarkingTilesButton;
+var debugInfo;
 var savedBarbarianAssault;
 var savedTickCountSpanInnerHTML;
 var savedCurrentDefenderFoodSpanInnerHTML;
@@ -78,6 +80,7 @@ function init() {
     toggleLogToRepair = document.getElementById(HTML_TOGGLE_LOG_TO_REPAIR);
     toggleLogToRepair.onchange = toggleLogToRepairOnChange;
     tickCountSpan = document.getElementById(HTML_TICK_COUNT);
+    debugInfo = document.getElementById(HTML_DEBUG_INFO);
     currentDefenderFoodSpan = document.getElementById(HTML_CURRENT_DEF_FOOD);
     markerColorInput = document.getElementById(HTML_MARKER_COLOR);
     renderer = new Renderer(canvas, 64 * 12, 48 * 12, 12);
@@ -87,6 +90,7 @@ function init() {
     markedTiles = [];
     reset();
     window.onkeydown = windowOnKeyDown;
+    canvas.onmousemove = canvasOnMouseMove;
     canvas.onmousedown = canvasOnMouseDown;
     canvas.oncontextmenu = function (mouseEvent) {
         mouseEvent.preventDefault();
@@ -208,6 +212,12 @@ function load() {
     // so re-clone the save state in case of subsequent loads
     save();
     draw();
+}
+function canvasOnMouseMove(mouseEvent) {
+    const canvasRect = renderer.canvas.getBoundingClientRect();
+    const xTile = Math.trunc((mouseEvent.clientX - canvasRect.left) / renderer.tileSize);
+    const yTile = Math.trunc((canvasRect.bottom - 1 - mouseEvent.clientY) / renderer.tileSize);
+    debugInfo.innerHTML = `${xTile}, ${yTile}`;
 }
 /**
  * Handles the given mouse event.
@@ -485,6 +495,8 @@ function tick() {
         barbarianAssault.tick();
         currentDefenderFoodSpan.innerHTML = barbarianAssault.defenderFoodCall.toString();
         tickCountSpan.innerHTML = barbarianAssault.ticks.toString();
+        // console.log(barbarianAssault.defenderPlayer.pathQueuePositions);
+        // debugInfo.innerHTML = barbarianAssault.defenderPlayer.pathQueuePositions.join('\n').toString();
         draw();
     }
 }

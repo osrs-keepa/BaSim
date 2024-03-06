@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Ba simulator</title>
 <script type="module" src="built/sim.js"></script>
+<link rel="stylesheet" href="styles.css">
 Defender level: <select id="deflevelselect">
 <option value="4">Level 1</option>
 <option value="5" selected>Level 2-5</option>
@@ -37,7 +38,14 @@ Runner movements: <input id="runnermovements" type="text"/><br>
 Tick duration (milliseconds): <input id="tickduration" type="number" min="100" max="1200" value="600"/><br>
 <button id="markingtiles">Toggle tile marker mode</button><input type="color" id="marker" name="marker" value="#000000"> Marker<br>
 <button id="wavestart"></button> <b>Tick count: <span id="tickcount"></span></b> --- <b>Current Food: <span id="currdeffood"></span></b><br>
-<canvas id="basimcanvas"></canvas><br>
+<div class="side-by-side">
+    <canvas id="basimcanvas"></canvas>
+    <div>
+        <h2>Debug Info</h2>
+        <p id="debug-info"></p>
+    </div>
+</div>
+</br>
 <b>space</b> starts or stops the wave.<br>
 <b>left-click</b> moves the player.<br>
 <b>right-click</b> places a collector.<br>

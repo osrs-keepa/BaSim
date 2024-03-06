@@ -23,7 +23,7 @@ export abstract class Player extends Character {
      * @param barbarianAssault  the BarbarianAssault game to find the path to the given destination in
      * @param destination       the position to find the path to in the given BarbarianAssault game
      */
-    public findPath(barbarianAssault: BarbarianAssault, destination: Position): void {
+    public findPath(barbarianAssault: BarbarianAssault, destination: Position): number {
         for (let i: number = 0; i < barbarianAssault.map.width * barbarianAssault.map.height; i++) {
             this.shortestDistances[i] = 99999999;
             this.waypoints[i] = 0;
@@ -181,5 +181,6 @@ export abstract class Player extends Character {
                 currentPosition.y--;
             }
         }
+        return this.pathQueueIndex;
     }
 }

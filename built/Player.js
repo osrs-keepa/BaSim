@@ -148,5 +148,6 @@ export class Player extends Character {
                 currentPosition.y--;
             }
         }
+        return this.pathQueueIndex;
     }
 }

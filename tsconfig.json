@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "./built",
     "allowJs": true,
+    "module": "es2022",
     "target": "es2016",
     "lib": [
       "es2016",
