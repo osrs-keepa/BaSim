@@ -22,3 +22,5 @@ Run tests and generate a coverage report by running `npm run coverage` in the te
 Delete all transpiled JavaScript, delete the coverage report, and uninstall dependencies by running `npm run clean` in the terminal.
 
 In JetBrains IDEs, you can run the simulator by right-clicking `BaSim/index.html` in the project browser and selecting "Open in" > "Browser" > {your choice of browser}.
+
+In VSCode install the [Live Server](vscode:extension/ritwickdey.LiveServer) extension, after building the project right click `index.html` > "Open with Live Server"
